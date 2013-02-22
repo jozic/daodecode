@@ -2,10 +2,10 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://yoursite.com
-title: My Octopress Blog
+url: http://daodecode.com
+title: Dao De Code
 subtitle: A blogging framework for hackers.
-author: Your Name
+author: Eugene Platonov
 simple_search: http://google.com/search
 description:
 
