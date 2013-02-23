@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Dao De Code</title>
+  <title>Root Application Context in Play 2.1 - Dao De Code</title>
   <meta name="author" content="Eugene Platonov">
 
   
@@ -19,7 +19,7 @@ to configure root application context. It have been in 2.1 branch &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://daodecode.com/">
+  <link rel="canonical" href="http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,15 +63,12 @@ to configure root application context. It have been in 2.1 branch &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/">Root Application Context in Play 2.1</a></h1>
+      <h1 class="entry-title">Root Application Context in Play 2.1</h1>
     
     
       <p class="meta">
@@ -94,7 +91,7 @@ to configure root application context. It have been in 2.1 branch &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
+<div class="entry-content"><p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
 to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
  for a long-long time and I don&#8217;t see this mentioned in
 <a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.<br/>
@@ -107,18 +104,59 @@ To assign a root context to your play app just open your <code>application.conf<
 <p>Make sure you have it starting with slash (<code>/</code>)
 otherwise play will throw a configuration error at you saying &#8220;Invalid application context&#8221;.</p>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Eugene Platonov</span></span>
+
+      
+
+
+
+
+
+
+
+
   
 
 
-    </article>
+<time datetime="2013-02-23T17:34:00-05:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
   
-  <div class="pagination">
+    <a class='category' href='/blog/categories/play/'>play</a>, <a class='category' href='/blog/categories/scala/'>scala</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1/" data-via="" data-counturl="http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="small"></div>
+  
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -139,6 +177,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
 
   
 </aside>
+
 
     </div>
   </div>

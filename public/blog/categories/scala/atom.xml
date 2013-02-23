@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Dao De Code]]></title>
-  <link href="http://daodecode.com/atom.xml" rel="self"/>
+  <title><![CDATA[Category: scala | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
   <updated>2013-02-23T18:28:44-05:00</updated>
   <id>http://daodecode.com/</id>
@@ -20,16 +20,14 @@
     <id>http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1</id>
     <content type="html"><![CDATA[<p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
 to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
- for a long-long time and I don&#8217;t see this mentioned in
-<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.<br/>
-To assign a root context to your play app just open your <code>application.conf</code> file and add the following line</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>application.context=/my_root_context</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make sure you have it starting with slash (<code>/</code>)
-otherwise play will throw a configuration error at you saying &#8220;Invalid application context&#8221;.</p>
+ for a long-long time and I don't see this mentioned in
+<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it's there and it works.<br/>
+To assign a root context to your play app just open your <code>application.conf</code> file and add the following line
+<code>
+application.context=/my_root_context
+</code>
+Make sure you have it starting with slash (<code>/</code>)
+otherwise play will throw a configuration error at you saying "Invalid application context".</p>
 ]]></content>
   </entry>
   
