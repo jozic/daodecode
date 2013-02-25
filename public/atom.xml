@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-02-23T22:58:26-05:00</updated>
+  <updated>2013-02-25T19:41:53-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -14,6 +14,48 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Helper functions for building streams in Racket]]></title>
+    <link href="http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/"/>
+    <updated>2013-02-25T00:05:00-05:00</updated>
+    <id>http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket</id>
+    <content type="html"><![CDATA[<p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
+ So here are a couple of helper functions for easier stream creation:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="c1">; returns stream</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="nv">next-element</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">letrec </span><span class="p">([</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span>
+</span><span class='line'>                       <span class="p">(</span><span class="nb">cons </span><span class="p">(</span><span class="nf">current-element</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nf">next-element</span> <span class="nv">x</span><span class="p">)))))])</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="nv">seed</span><span class="p">))))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">; returns stream built sequantialy</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And usage:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">nats</span> <span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="mi">1</span> <span class="nv">identity</span><span class="p">))</span> <span class="c1">; define stream of natural numbers</span>
+</span><span class='line'><span class="p">(</span><span class="nf">nats</span><span class="p">)</span> <span class="c1">; returns &#39;(1 . #&lt;procedure&gt;)</span>
+</span><span class='line'><span class="p">((</span><span class="nb">cdr </span><span class="p">(</span><span class="nf">nats</span><span class="p">)))</span> <span class="c1">; returns &#39;(2 . #&lt;procedure&gt;)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Root Application Context in Play 2.1]]></title>
     <link href="http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1/"/>
     <updated>2013-02-23T17:34:00-05:00</updated>
@@ -21,7 +63,7 @@
     <content type="html"><![CDATA[<p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
 to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
  for a long-long time and I don&#8217;t see this mentioned in
-<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.<br/>
+<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.
 To assign a root context to your play app just open your <code>application.conf</code> file and add the following line</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>

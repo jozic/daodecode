@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Dao De Code</title>
+  <title>Helper functions for building streams in Racket - Dao De Code</title>
   <meta name="author" content="Eugene Platonov">
 
   
@@ -26,7 +26,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://daodecode.com/">
+  <link rel="canonical" href="http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -70,15 +70,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper Functions for Building Streams in Racket</a></h1>
+      <h1 class="entry-title">Helper Functions for Building Streams in Racket</h1>
     
     
       <p class="meta">
@@ -101,7 +98,7 @@
   </header>
 
 
-  <div class="entry-content"><p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
+<div class="entry-content"><p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
  So here are a couple of helper functions for easier stream creation:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -136,22 +133,16 @@
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/">Root Application Context in Play 2.1</a></h1>
-    
-    
-      <p class="meta">
-        
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Eugene Platonov</span></span>
+
+      
 
 
 
@@ -163,38 +154,46 @@
   
 
 
-<time datetime="2013-02-23T17:34:00-05:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2013</time>
-        
-      </p>
+<time datetime="2013-02-25T00:05:00-05:00" pubdate data-updated="true">Feb 25<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lots-of-parens/'>lots of parens</a>, <a class='category' href='/blog/categories/racket/'>racket</a>
+  
+</span>
+
+
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
-to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
- for a long-long time and I don&#8217;t see this mentioned in
-<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.
-To assign a root context to your play app just open your <code>application.conf</code> file and add the following line</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>application.context=/my_root_context</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make sure you have it starting with slash (<code>/</code>)
-otherwise play will throw a configuration error at you saying &#8220;Invalid application context&#8221;.</p>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/" data-via="" data-counturl="http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="small"></div>
+  
+  
 </div>
-  
-  
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/" title="Previous Post: Root Application Context in Play 2.1">&laquo; Root Application Context in Play 2.1</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -220,6 +219,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -234,7 +234,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
       var disqus_shortname = 'daodecode';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/';
+        var disqus_url = 'http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

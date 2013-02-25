@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: racket | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/racket/atom.xml" rel="self"/>
+  <link href="http://daodecode.com/"/>
+  <updated>2013-02-25T19:41:53-05:00</updated>
+  <id>http://daodecode.com/</id>
+  <author>
+    <name><![CDATA[Eugene Platonov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Helper functions for building streams in Racket]]></title>
+    <link href="http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/"/>
+    <updated>2013-02-25T00:05:00-05:00</updated>
+    <id>http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket</id>
+    <content type="html"><![CDATA[<p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
+ So here are a couple of helper functions for easier stream creation:
+``` racket
+; returns stream
+(define (stream-builder seed current-element next-element)
+  (letrec ([lazy-seq (lambda (x)</p>
+
+<pre><code>                   (cons (current-element x) (lambda () (lazy-seq (next-element x)))))])
+(lambda () (lazy-seq seed))))
+</code></pre>
+
+<p>; returns stream built sequantialy
+(define (seq-stream-builder seed current-element)
+  (stream-builder seed current-element (lambda (x) (+ 1 x))))
+```
+And usage:</p>
+
+<p><code>racket
+(define nats (seq-stream-builder 1 identity)) ; define stream of natural numbers
+(nats) ; returns '(1 . #&lt;procedure&gt;)
+((cdr (nats))) ; returns '(2 . #&lt;procedure&gt;)
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

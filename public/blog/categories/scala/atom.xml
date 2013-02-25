@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scala | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-02-23T22:58:26-05:00</updated>
+  <updated>2013-02-25T19:41:53-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -21,7 +21,7 @@
     <content type="html"><![CDATA[<p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
 to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
  for a long-long time and I don't see this mentioned in
-<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it's there and it works.<br/>
+<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it's there and it works.
 To assign a root context to your play app just open your <code>application.conf</code> file and add the following line
 <code>
 application.context=/my_root_context
