@@ -9,15 +9,9 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="In Racket you can define streams which are kind of lazy lists. So here are a couple of helper functions for easier stream creation: 1
-2
-3
-4
-5
-6
-7
-8
-9 &hellip;">
+  <meta name="description" content="Camel and Scala is a good combination,
+but if you like to be on the bleeding edge and almost done converting your scala app to 2.10
+you can find that &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +66,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/28/camel-and-scala-2-dot-10/">Camel and Scala 2.10</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-28T23:33:00-05:00" pubdate data-updated="true">Feb 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://camel.apache.org/">Camel</a> and <a href="http://www.scala-lang.org/">Scala</a> is a good combination,
+but if you like to be on the bleeding edge and almost done converting your scala app to <a href="http://www.scala-lang.org/node/27499">2.10</a>
+you can find that camel still doesn&#8217;t have a stable release supporting scala 2.10.
+So SNAPSHOT will do the trick in this case, but you know&#8230; it&#8217;s a SNAPSHOT :)<br/>
+All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Apache Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;http://repository.apache.org/snapshots/&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.apache.camel&quot;</span> <span class="o">%</span> <span class="s">&quot;camel-scala&quot;</span> <span class="o">%</span> <span class="s">&quot;2.11-SNAPSHOT&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add those to your sbt build and you are all set.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -200,6 +245,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/02/28/camel-and-scala-2-dot-10/">Camel and Scala 2.10</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper functions for building streams in Racket</a>

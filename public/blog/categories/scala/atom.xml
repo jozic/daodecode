@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scala | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-02-25T19:41:53-05:00</updated>
+  <updated>2013-02-28T23:56:06-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Camel and Scala 2.10]]></title>
+    <link href="http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10/"/>
+    <updated>2013-02-28T23:33:00-05:00</updated>
+    <id>http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10</id>
+    <content type="html"><![CDATA[<p><a href="http://camel.apache.org/">Camel</a> and <a href="http://www.scala-lang.org/">Scala</a> is a good combination,
+but if you like to be on the bleeding edge and almost done converting your scala app to <a href="http://www.scala-lang.org/node/27499">2.10</a>
+you can find that camel still doesn't have a stable release supporting scala 2.10.
+So SNAPSHOT will do the trick in this case, but you know... it's a SNAPSHOT :)<br/>
+All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
+
+<p>``` scala
+resolvers += "Apache Snapshots" at "http://repository.apache.org/snapshots/"</p>
+
+<p>libraryDependencies += "org.apache.camel" % "camel-scala" % "2.11-SNAPSHOT"
+```
+Add those to your sbt build and you are all set.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Root Application Context in Play 2.1]]></title>

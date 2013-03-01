@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-02-25T19:41:53-05:00</updated>
+  <updated>2013-02-28T23:56:06-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,30 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Camel and Scala 2.10]]></title>
+    <link href="http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10/"/>
+    <updated>2013-02-28T23:33:00-05:00</updated>
+    <id>http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10</id>
+    <content type="html"><![CDATA[<p><a href="http://camel.apache.org/">Camel</a> and <a href="http://www.scala-lang.org/">Scala</a> is a good combination,
+but if you like to be on the bleeding edge and almost done converting your scala app to <a href="http://www.scala-lang.org/node/27499">2.10</a>
+you can find that camel still doesn&#8217;t have a stable release supporting scala 2.10.
+So SNAPSHOT will do the trick in this case, but you know&#8230; it&#8217;s a SNAPSHOT :)<br/>
+All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Apache Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;http://repository.apache.org/snapshots/&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.apache.camel&quot;</span> <span class="o">%</span> <span class="s">&quot;camel-scala&quot;</span> <span class="o">%</span> <span class="s">&quot;2.11-SNAPSHOT&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add those to your sbt build and you are all set.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Helper functions for building streams in Racket]]></title>
