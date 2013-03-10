@@ -10,7 +10,7 @@ You have a [Play](http://www.playframework.com/) application and let's say you w
 You want all your users to provide a ticket (e.g [cas proxy ticket](https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough))
 in a request header, so you can use the ticket to authenticate them.
 
-Play's [Secured.Authenticated](http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$)
+Play's [Security.Authenticated](http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$)
 to the rescue!
 
 You can come up with something like this in Play 2.1:
