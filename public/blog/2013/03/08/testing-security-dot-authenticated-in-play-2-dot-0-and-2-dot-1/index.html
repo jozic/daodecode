@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Dao De Code</title>
+  <title>Testing Security.Authenticated in Play 2.0 and 2.1 - Dao De Code</title>
   <meta name="author" content="Eugene Platonov">
 
   
@@ -19,7 +19,7 @@ You want all &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://daodecode.com/">
+  <link rel="canonical" href="http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,15 +63,12 @@ You want all &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/">Testing Security.Authenticated in Play 2.0 and 2.1</a></h1>
+      <h1 class="entry-title">Testing Security.Authenticated in Play 2.0 and 2.1</h1>
     
     
       <p class="meta">
@@ -94,7 +91,7 @@ You want all &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>You have a <a href="http://www.playframework.com/">Play</a> application and let&#8217;s say you want to add some simple authentication logic to restrict access to your actions.
+<div class="entry-content"><p>You have a <a href="http://www.playframework.com/">Play</a> application and let&#8217;s say you want to add some simple authentication logic to restrict access to your actions.
 You want all your users to provide a ticket (e.g <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">cas proxy ticket</a>)
 in a request header, so you can use the ticket to authenticate them.</p>
 
@@ -322,73 +319,16 @@ so with this implementation of <code>withTicket</code> you need to do some tribl
 
 <p>Full source code can be found on <a href="https://github.com/jozic/play-security-authenticated-tests">github</a> in branches play20 and play20 correspondently.</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/28/camel-and-scala-2-dot-10/">Camel and Scala 2.10</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Eugene Platonov</span></span>
 
-<time datetime="2013-02-28T23:33:00-05:00" pubdate data-updated="true">Feb 28<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://camel.apache.org/">Camel</a> and <a href="http://www.scala-lang.org/">Scala</a> is a good combination,
-but if you like to be on the bleeding edge and almost done converting your scala app to <a href="http://www.scala-lang.org/node/27499">2.10</a>
-you can find that camel still doesn&#8217;t have a stable release supporting scala 2.10.
-So SNAPSHOT will do the trick in this case, but you know&#8230; it&#8217;s a SNAPSHOT :)<br/>
-All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Apache Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;http://repository.apache.org/snapshots/&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.apache.camel&quot;</span> <span class="o">%</span> <span class="s">&quot;camel-scala&quot;</span> <span class="o">%</span> <span class="s">&quot;2.11-SNAPSHOT&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Add those to your sbt build and you are all set.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper Functions for Building Streams in Racket</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -400,107 +340,46 @@ All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
   
 
 
-<time datetime="2013-02-25T00:05:00-05:00" pubdate data-updated="true">Feb 25<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
- So here are a couple of helper functions for easier stream creation:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="c1">; returns stream</span>
-</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="nv">next-element</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">letrec </span><span class="p">([</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span>
-</span><span class='line'>                       <span class="p">(</span><span class="nb">cons </span><span class="p">(</span><span class="nf">current-element</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nf">next-element</span> <span class="nv">x</span><span class="p">)))))])</span>
-</span><span class='line'>    <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="nv">seed</span><span class="p">))))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">; returns stream built sequantialy</span>
-</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And usage:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">nats</span> <span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="mi">1</span> <span class="nv">identity</span><span class="p">))</span> <span class="c1">; define stream of natural numbers</span>
-</span><span class='line'><span class="p">(</span><span class="nf">nats</span><span class="p">)</span> <span class="c1">; returns &#39;(1 . #&lt;procedure&gt;)</span>
-</span><span class='line'><span class="p">((</span><span class="nb">cdr </span><span class="p">(</span><span class="nf">nats</span><span class="p">)))</span> <span class="c1">; returns &#39;(2 . #&lt;procedure&gt;)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-03-08T21:00:00-05:00" pubdate data-updated="true">Mar 8<span>th</span>, 2013</time>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/">Root Application Context in Play 2.1</a></h1>
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
+    <a class='category' href='/blog/categories/play/'>play</a>, <a class='category' href='/blog/categories/scala/'>scala</a>
+  
+</span>
 
 
-<time datetime="2013-02-23T17:34:00-05:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2013</time>
-        
-      </p>
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>So <a href="http://www.playframework.com/">Play 2.1</a> is officialy out and one of the new features it brings is the ability
-to configure root application context. It have been in <a href="https://github.com/playframework/Play20/commit/da6bbc4">2.1 branch</a>
- for a long-long time and I don&#8217;t see this mentioned in
-<a href="http://www.playframework.com/documentation/2.1.0/Highlights">highlights section</a>, but nevertheless it&#8217;s there and it works.
-To assign a root context to your play app just open your <code>application.conf</code> file and add the following line</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>application.context=/my_root_context</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make sure you have it starting with slash (<code>/</code>)
-otherwise play will throw a configuration error at you saying &#8220;Invalid application context&#8221;.</p>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/" data-via="" data-counturl="http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="small"></div>
+  
+  
 </div>
-  
-  
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/28/camel-and-scala-2-dot-10/" title="Previous Post: Camel and Scala 2.10">&laquo; Camel and Scala 2.10</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -534,6 +413,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -548,7 +428,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
       var disqus_shortname = 'daodecode';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/';
+        var disqus_url = 'http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

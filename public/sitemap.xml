@@ -12,11 +12,17 @@
     </url>
     <url>
         <loc>http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10/</loc>
-        <lastmod>2013-02-28T23:56:06-05:00</lastmod>
+        <lastmod>2013-03-08T20:55:56-05:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/
+        </loc>
+        <lastmod>2013-03-09T21:31:48-05:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/</loc>
-        <lastmod>2013-02-28T23:56:06-05:00</lastmod>
+        <lastmod>2013-03-09T21:31:48-05:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/robots.txt</loc>
@@ -24,6 +30,6 @@
     </url>
     <url>
         <loc>http://daodecode.com/blog/archives/</loc>
-        <lastmod>2013-02-28T23:56:06-05:00</lastmod>
+        <lastmod>2013-03-09T21:31:48-05:00</lastmod>
     </url>
 </urlset>
