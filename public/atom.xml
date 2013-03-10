@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-03-09T21:31:49-05:00</updated>
+  <updated>2013-03-10T17:50:29-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -22,7 +22,7 @@
 You want all your users to provide a ticket (e.g <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">cas proxy ticket</a>)
 in a request header, so you can use the ticket to authenticate them.</p>
 
-<p>Play&#8217;s <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$">Secured.Authenticated</a>
+<p>Play&#8217;s <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$">Security.Authenticated</a>
 to the rescue!</p>
 
 <p>You can come up with something like this in Play 2.1:</p>
