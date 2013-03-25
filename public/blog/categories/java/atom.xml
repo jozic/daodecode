@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: java | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://daodecode.com/"/>
+  <updated>2013-03-25T13:49:45-04:00</updated>
+  <id>http://daodecode.com/</id>
+  <author>
+    <name><![CDATA[Eugene Platonov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CASTGC Cookie and HttpOnly Flag]]></title>
+    <link href="http://daodecode.com/blog/2013/03/25/castgc-cookie-and-httponly-flag/"/>
+    <updated>2013-03-25T10:56:00-04:00</updated>
+    <id>http://daodecode.com/blog/2013/03/25/castgc-cookie-and-httponly-flag</id>
+    <content type="html"><![CDATA[<p>Let's assume you employ <a href="http://www.jasig.org/cas">CAS</a> to be your single sign-on solution. Upon receiving correct credentials from the user CAS generates CASTGC cookie,
+   which is marked with <a href="http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly">Secured</a> flag. And assume you want to add <a href="http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly">HttpOnly</a>
+   flag to the cookie, to prevent accessing it <code>via non-HTTP methods</code>.
+   CAS of version 3.5.0 depends on <a href="http://download.oracle.com/otndocs/jcp/servlet-2.5-mrel-eval-oth-JSpec/">servlet-api 2.5</a> and fancy <a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)">setHttpOnly</a>
+   method has been added in version 3.0 of the servlet-api. So how do we deal with it?</p>
+
+<p>Assuming you run your CAS in a servlet container based on <a href="http://download.oracle.com/otndocs/jcp/servlet-3.0-fr-oth-JSpec/">servlet 3.0 specification</a>
+ (e.g. <a href="http://eclipse.org/jetty/">Jetty 8</a> or <a href="http://tomcat.apache.org/download-70.cgi">Tomcat 7</a>) and use <a href="http://maven.apache.org/">maven</a> as your build tool you can do the following to make it happen:</p>
+
+<ol>
+<li> exclude old (2.5 and lower) servlet-api jars from dependencies. For example
+
+```xml
+    <dependency>
+        <groupId>org.jasig.cas</groupId>
+        <artifactId>cas-server-integration-restlet</artifactId>
+        <version>${casVersion}</version>
+        <exclusions>
+            <exclusion>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+```
+</li>
+<li> include new servlet-api jar (notice that artifact id has been changed)
+
+``` xml
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
+        <scope>provided</scope>
+    </dependency>
+```
+</li>
+<li> create your own version of <a href="https://github.com/Jasig/cas/blob/master/cas-server-webapp/src/main/java/org/jasig/cas/web/support/CookieRetrievingCookieGenerator.java">CookieRetrievingCookieGenerator</a>
+which supports HttpOnly flag. You want to extend this class because CAS relies on it internally.
+
+``` java
+    package com.daodecode.cas.web.support;
+
+    import javax.servlet.http.Cookie;
+
+    public class HttpOnlySupportingCookieGenerator
+            extends org.jasig.cas.web.support.CookieRetrievingCookieGenerator {
+        private boolean cookieHttpOnly = false;
+
+        public void setCookieHttpOnly(boolean cookieHttpOnly) {
+            this.cookieHttpOnly = cookieHttpOnly;
+        }
+
+        @Override
+        protected Cookie createCookie(String cookieValue) {
+            Cookie cookie = super.createCookie(cookieValue);
+            cookie.setHttpOnly(cookieHttpOnly);
+            return cookie;
+        }
+    }
+```
+</li>
+<li> override TGT Cookie Generator creation providing your version of <code>ticketGrantingTicketCookieGenerator.xml</code>
+
+``` xml
+    <bean id="ticketGrantingTicketCookieGenerator"
+          class="com.daodecode.cas.web.support.HttpOnlySupportingCookieGenerator"
+        cookieSecure="${cas.cookie.secure}"
+        cookieHttpOnly="${cas.cookie.httponly}"
+        cookieMaxAge="-1"
+        cookieName="CASTGC"
+        cookiePath="${cas.cookie.path}" />
+```
+</li>
+</ol>
+
+
+<p>done!</p>
+]]></content>
+  </entry>
+  
+</feed>

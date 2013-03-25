@@ -9,8 +9,7 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="You have a Play application and let&#8217;s say you want to add some simple authentication logic to restrict access to your actions.
-You want all &hellip;">
+  <meta name="description" content="Let&#8217;s assume you employ CAS to be your single sign-on solution. Upon receiving correct credentials from the user CAS generates CASTGC cookie, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +64,158 @@ You want all &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/25/castgc-cookie-and-httponly-flag/">CASTGC Cookie and HttpOnly Flag</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-25T10:56:00-04:00" pubdate data-updated="true">Mar 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Let&#8217;s assume you employ <a href="http://www.jasig.org/cas">CAS</a> to be your single sign-on solution. Upon receiving correct credentials from the user CAS generates CASTGC cookie,
+   which is marked with <a href="http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly">Secured</a> flag. And assume you want to add <a href="http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly">HttpOnly</a>
+   flag to the cookie, to prevent accessing it <code>via non-HTTP methods</code>.
+   CAS of version 3.5.0 depends on <a href="http://download.oracle.com/otndocs/jcp/servlet-2.5-mrel-eval-oth-JSpec/">servlet-api 2.5</a> and fancy <a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)">setHttpOnly</a>
+   method has been added in version 3.0 of the servlet-api. So how do we deal with it?</p>
+
+<p>Assuming you run your CAS in a servlet container based on <a href="http://download.oracle.com/otndocs/jcp/servlet-3.0-fr-oth-JSpec/">servlet 3.0 specification</a>
+ (e.g. <a href="http://eclipse.org/jetty/">Jetty 8</a> or <a href="http://tomcat.apache.org/download-70.cgi">Tomcat 7</a>) and use <a href="http://maven.apache.org/">maven</a> as your build tool you can do the following to make it happen:</p>
+
+<ol>
+<li> exclude old (2.5 and lower) servlet-api jars from dependencies. For example
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>org.jasig.cas<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>cas-server-integration-restlet<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>${casVersion}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;exclusions&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;exclusion&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/exclusion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/exclusions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+</li>
+<li> include new servlet-api jar (notice that artifact id has been changed)
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>javax.servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>3.0.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+</li>
+<li> create your own version of <a href="https://github.com/Jasig/cas/blob/master/cas-server-webapp/src/main/java/org/jasig/cas/web/support/CookieRetrievingCookieGenerator.java">CookieRetrievingCookieGenerator</a>
+which supports HttpOnly flag. You want to extend this class because CAS relies on it internally.
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">daodecode</span><span class="o">.</span><span class="na">cas</span><span class="o">.</span><span class="na">web</span><span class="o">.</span><span class="na">support</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">javax.servlet.http.Cookie</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpOnlySupportingCookieGenerator</span>
+</span><span class='line'>        <span class="kd">extends</span> <span class="n">org</span><span class="o">.</span><span class="na">jasig</span><span class="o">.</span><span class="na">cas</span><span class="o">.</span><span class="na">web</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">CookieRetrievingCookieGenerator</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">cookieHttpOnly</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCookieHttpOnly</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">cookieHttpOnly</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">cookieHttpOnly</span> <span class="o">=</span> <span class="n">cookieHttpOnly</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="n">Cookie</span> <span class="nf">createCookie</span><span class="o">(</span><span class="n">String</span> <span class="n">cookieValue</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Cookie</span> <span class="n">cookie</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">createCookie</span><span class="o">(</span><span class="n">cookieValue</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">cookie</span><span class="o">.</span><span class="na">setHttpOnly</span><span class="o">(</span><span class="n">cookieHttpOnly</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">cookie</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+</li>
+<li> override TGT Cookie Generator creation providing your version of <code>ticketGrantingTicketCookieGenerator.xml</code>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;ticketGrantingTicketCookieGenerator&quot;</span>
+</span><span class='line'>      <span class="na">class=</span><span class="s">&quot;com.daodecode.cas.web.support.HttpOnlySupportingCookieGenerator&quot;</span>
+</span><span class='line'>    <span class="na">cookieSecure=</span><span class="s">&quot;${cas.cookie.secure}&quot;</span>
+</span><span class='line'>    <span class="na">cookieHttpOnly=</span><span class="s">&quot;${cas.cookie.httponly}&quot;</span>
+</span><span class='line'>    <span class="na">cookieMaxAge=</span><span class="s">&quot;-1&quot;</span>
+</span><span class='line'>  <span class="na">cookieName=</span><span class="s">&quot;CASTGC&quot;</span>
+</span><span class='line'>  <span class="na">cookiePath=</span><span class="s">&quot;${cas.cookie.path}&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+</li>
+</ol>
+
+
+<p>done!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -506,6 +657,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/25/castgc-cookie-and-httponly-flag/">CASTGC Cookie and HttpOnly Flag</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/">Testing Security.Authenticated in Play 2.0 and 2.1</a>
