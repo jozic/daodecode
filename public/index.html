@@ -9,7 +9,8 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="Let&#8217;s assume you employ CAS to be your single sign-on solution. Upon receiving correct credentials from the user CAS generates CASTGC cookie, &hellip;">
+  <meta name="description" content="So you have your own sbt plugin (or someone&#8217;s plugin if you are not so cool and sexy) and you want to debug it.
+It happens that there is &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +65,84 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/">Debug an Sbt Plugin in IntelliJ IDEA</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-19T12:51:00-04:00" pubdate data-updated="true">Apr 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So you have your own sbt plugin (or someone&#8217;s plugin if you are not so cool and sexy) and you want to debug it.
+It happens that there is nothing easier than that. If you run sbt through <a href="https://github.com/paulp/sbt-extras">sbt-extras</a> script (if you don&#8217;t you should)
+just start your test sbt app with the plugin added to the build with the following command</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sbt -jvm-debug 5005</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can use any port, I use 5005 because it&#8217;s a default port for remote debug configuration in <a href="http://www.jetbrains.com/idea/">IntelliJ IDEA</a> which I use for scala development.
+And if you are cool and sexy, you know&#8230; :)</p>
+
+<p>This is how your sbt console should look like after you start it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>jozic@laptop ~/projects/sbt-about-plugins $ sbt -jvm-debug 5005
+</span><span class='line'>Detected sbt version 0.12.3
+</span><span class='line'>Starting sbt: invoke with -help for other options
+</span><span class='line'>Listening for transport dt_socket at address: 5005
+</span><span class='line'>[info] Loading global plugins from /home/jozic/.sbt/plugins
+</span><span class='line'>[info] Loading project definition from /home/jozic/projects/sbt-about-plugins/project
+</span><span class='line'>[info] Set current project to sbt-about-plugins (in build file:/home/jozic/projects/sbt-about-plugins/)
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then open your project in IDEA (you can generate IDEA project files using
+<a href="https://github.com/mpeltonen/sbt-idea">sbt-idea</a> plugin) and create remote debug configuration.
+<img src="/images/sbt-debug/idea.debug.configuration.png">
+You can change port, but 5005 will do in our case, so you literaly can save default configuration.
+Run it and you should get the following line in IDEA console:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Connected to the target VM, address: 'localhost:5005', transport: 'socket'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that put a braikpoing inside your plugin command, switch to sbt console, run your command and here you go!
+<img src="/images/sbt-debug/idea.breakpoint.in.action.png"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -659,6 +738,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/">Debug an sbt plugin in IntelliJ IDEA</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/03/25/castgc-cookie-and-httponly-flag/">CASTGC Cookie and HttpOnly Flag</a>
       </li>
     
@@ -672,10 +755,6 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
     
       <li class="post">
         <a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper functions for building streams in Racket</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/">Root Application Context in Play 2.1</a>
       </li>
     
   </ul>
