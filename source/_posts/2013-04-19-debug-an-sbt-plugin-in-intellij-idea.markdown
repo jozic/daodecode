@@ -36,7 +36,7 @@ Run it and you should get the following line in IDEA console:
 Connected to the target VM, address: 'localhost:5005', transport: 'socket'
 ```
 
-After that put a braikpoing inside your plugin command, switch to sbt console, run your command and here you go!
+After that put a breakpoint inside your plugin command, switch to sbt console, run your command and here you go!
 {% img /images/sbt-debug/idea.breakpoint.in.action.png %}
 
 
