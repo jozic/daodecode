@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-04-19T21:46:54-04:00</updated>
+  <updated>2013-04-19T22:02:24-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -59,7 +59,7 @@ Run it and you should get the following line in IDEA console:</p>
 </pre></td><td class='code'><pre><code class=''><span class='line'>Connected to the target VM, address: 'localhost:5005', transport: 'socket'</span></code></pre></td></tr></table></div></figure>
 
 
-<p>After that put a braikpoing inside your plugin command, switch to sbt console, run your command and here you go!
+<p>After that put a breakpoint inside your plugin command, switch to sbt console, run your command and here you go!
 <img src="http://daodecode.com/images/sbt-debug/idea.breakpoint.in.action.png"></p>
 ]]></content>
   </entry>
