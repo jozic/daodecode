@@ -9,8 +9,7 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="So you have your own sbt plugin (or someone&#8217;s plugin if you are not so cool and sexy) and you want to debug it.
-It happens that there is &hellip;">
+  <meta name="description" content="Let&#8217;s say you want to find an answer to Life, the Universe and Everything and you know it will take some time, so you want to do it in parralel &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +64,213 @@ It happens that there is &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/12/akka-stop-your-router-gracefully/">Akka: Stop Your Router Gracefully</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-12T23:34:00-04:00" pubdate data-updated="true">Jul 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Let&#8217;s say you want to find an answer to <a href="http://en.wikipedia.org/wiki/Answer_to_Life,_the_Universe,_and_Everything">Life, the Universe and Everything</a>
+ and you know it will take some time,
+ so you want to do it in parralel while doing something else (DSE).<br/>
+You say to yourself &#8220;okay, I&#8217;ll fire an actor and send him a message or bunch of messages, then DSE and collect my results from the actor after i&#8217;m done&#8221;</p>
+
+<p>So you&#8217;ve got it coded</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">val</span> <span class="n">answerToLifeTheUniverseAndEverything</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">actor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">i</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">answerToLifeTheUniverseAndEverything</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">()</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you want make it work and get results at the end. You need to make sure to access the result after all work is done.
+From <a href="http://akka.io/docs/">akka documentation</a> you found out that <a href="http://doc.akka.io/api/akka/2.2.0/index.html#akka.pattern.GracefulStopSupport"><code>akka.pattern.GracefulStopSupport</code></a>
+seems a good choice to do it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">42</span><span class="o">)</span> <span class="n">actor</span> <span class="o">!</span> <span class="n">i</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// DO SOMETHING ELSE</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">akka.pattern.gracefulStop</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">gracefulStop</span><span class="o">(</span><span class="n">actor</span><span class="o">,</span> <span class="n">timeout</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;We found the answer, it&#39;s ${answerToLifeTheUniverseAndEverything.get}&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as a result you see</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">We</span> <span class="n">found</span> <span class="n">the</span> <span class="n">answer</span><span class="o">,</span> <span class="n">it</span><span class="-Symbol">&#39;s</span> <span class="mi">42</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nice!<br/>
+But then you think &#8220;I can do it not only in parallel to my DSE, but compute it in many independent actors, so it will be done even faster&#8221;.
+Using a router actor seems an easy way to do it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">val</span> <span class="n">answerToLifeTheUniverseAndEverything</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">router</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">i</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">answerToLifeTheUniverseAndEverything</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">()</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}).</span><span class="n">withRouter</span><span class="o">(</span><span class="nc">RoundRobinRouter</span><span class="o">(</span><span class="n">nrOfInstances</span> <span class="k">=</span> <span class="mi">10</span><span class="o">)))</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">42</span><span class="o">)</span> <span class="n">router</span> <span class="o">!</span> <span class="n">i</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// DO SOMETHING ELSE</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">akka.pattern.gracefulStop</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">gracefulStop</span><span class="o">(</span><span class="n">router</span><span class="o">,</span> <span class="n">timeout</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;We found the answer, it&#39;s ${answerToLifeTheUniverseAndEverything.get}&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Router sends messages to routees in round-robin fashion and routees do the work parallel to each other.
+At the end you again see</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">We</span> <span class="n">found</span> <span class="n">the</span> <span class="n">answer</span><span class="o">,</span> <span class="n">it</span><span class="-Symbol">&#39;s</span> <span class="mi">42</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Super nice! You&#8217;re done! You can go and grab a milk shake. Or do you?  <br/>
+Computing answer to Life, the Universe and Everything is a complex task, so it really should take some time and effort to calculate it.<br/>
+Let&#8217;s add <code>Thread.sleep(1000)</code> pretending that our actor(or rather many actors) do something time consuming.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="n">i</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">answerToLifeTheUniverseAndEverything</span><span class="o">.</span><span class="n">getAndIncrement</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then while you enjoing your shake all of a sudden you see</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">We</span> <span class="n">found</span> <span class="n">the</span> <span class="n">answer</span><span class="o">,</span> <span class="n">it</span><span class="-Symbol">&#39;s</span> <span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What the hell?<br/>
+The thing is <code>gracefullStop</code> sends a <code>PoisonPill</code> to an actor, which is a router in our case.
+Once an actor gets to a <code>PoisonPill</code> message it decides to die and as a good parent, he can&#8217;t allow his children stay and suffer in this cruel world, so he kills them too.<br/>
+&#8220;But <code>PoisonPill</code> will be the last message my router gets, right? So it dies after all other messages are processed.&#8221; you say.<br/>
+Right, but processing a message from a router&#8217;s point of view is just to send it to one of its routees.<br/>
+But then it dies when they still in progress and because the number of messages (42) is greater than number of routees (10) they all have more than one message to process.
+So they do, until their <em>Daddy</em> comes and gets them to the <em>Land of Peace</em>. Their unprocessed messages are lost.
+Thus the answer to Life, the Universe and Everything you get is 10. It can be different, but it usually will be around a number of routees.</p>
+
+<p>So what is the solution?</p>
+
+<p>The answer before akka 2.2 is don&#8217;t use <code>gracefulStop</code> with routers! (Of course you can take a look at the source code and make your own version of <code>gracefulStop</code>)
+Since 2.2 you can specify stopMessage which is a <code>PoisonPill</code> by default. So the line will look like</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">gracefulStop</span><span class="o">(</span><span class="n">router</span><span class="o">,</span> <span class="n">timeout</span><span class="o">,</span> <span class="nc">Broadcast</span><span class="o">(</span><span class="nc">PoisonPill</span><span class="o">)),</span> <span class="n">timeout</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now the answer is correct again :)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">We</span> <span class="n">found</span> <span class="n">the</span> <span class="n">answer</span><span class="o">,</span> <span class="n">it</span><span class="-Symbol">&#39;s</span> <span class="mi">42</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -738,6 +944,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/07/12/akka-stop-your-router-gracefully/">Akka: Stop Your Router Gracefully</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/">Debug an sbt plugin in IntelliJ IDEA</a>
       </li>
     
@@ -753,10 +963,6 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
         <a href="/blog/2013/02/28/camel-and-scala-2-dot-10/">Camel and Scala 2.10</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper functions for building streams in Racket</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -766,7 +972,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
 
 <section>
   <h1>Categories</h1>
-    <span id="tag-cloud"><a href='/blog/categories/camel' style='font-size: 115.0%'>camel</a> <a href='/blog/categories/cas' style='font-size: 115.0%'>cas</a> <a href='/blog/categories/idea' style='font-size: 115.0%'>idea</a> <a href='/blog/categories/java' style='font-size: 115.0%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 115.0%'>lots of parens</a> <a href='/blog/categories/play' style='font-size: 130.0%'>play</a> <a href='/blog/categories/racket' style='font-size: 115.0%'>racket</a> <a href='/blog/categories/sbt' style='font-size: 115.0%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 112.0%'>akka</a> <a href='/blog/categories/camel' style='font-size: 112.0%'>camel</a> <a href='/blog/categories/cas' style='font-size: 112.0%'>cas</a> <a href='/blog/categories/idea' style='font-size: 112.0%'>idea</a> <a href='/blog/categories/java' style='font-size: 112.0%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 112.0%'>lots of parens</a> <a href='/blog/categories/play' style='font-size: 124.0%'>play</a> <a href='/blog/categories/racket' style='font-size: 112.0%'>racket</a> <a href='/blog/categories/router' style='font-size: 112.0%'>router</a> <a href='/blog/categories/sbt' style='font-size: 112.0%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> </span>
 </section>
 
   
