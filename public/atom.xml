@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-07-15T22:34:06-04:00</updated>
+  <updated>2013-10-28T17:28:34-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,102 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ReactiveMongo, macros and  NoSuchElementException: None.get]]></title>
+    <link href="http://daodecode.com/blog/2013/10/27/reactivemongo/"/>
+    <updated>2013-10-27T20:40:00-04:00</updated>
+    <id>http://daodecode.com/blog/2013/10/27/reactivemongo</id>
+    <content type="html"><![CDATA[<p><a href="http://reactivemongo.org/">ReactiveMongo</a> employs <a href="http://scalamacros.org/">scala macros</a>
+ to generate readers(deserializers) and writers(serializers)
+for scala case classes. They work pretty good, but sometimes you can get a
+<code>java.lang.NoSuchElementException</code> with message <code>None.get</code> :(</p>
+
+<p>Let&#8217;s say you have</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Person</span><span class="o">(</span><span class="n">fisrtName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">lastName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">age</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">readers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">personReader</span> <span class="k">=</span> <span class="nc">Macros</span><span class="o">.</span><span class="n">reader</span><span class="o">[</span><span class="kt">Person</span><span class="o">]</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and somewhere in your code you use it</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">readers._</span>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="k">def</span> <span class="n">findByFirstName</span><span class="o">(</span><span class="n">fName</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">personCollection</span><span class="o">.</span><span class="n">find</span><span class="o">(</span><span class="nc">BSONDocument</span><span class="o">(</span><span class="s">&quot;firstName&quot;</span> <span class="o">-&gt;</span> <span class="n">fName</span><span class="o">)).</span><span class="n">one</span><span class="o">[</span><span class="kt">Person</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>if your data is correct you are good, but let&#8217;s say you have some corrupted documents, for example <code>Joe</code> doesn&#8217;t have last name</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">&gt;</span> <span class="n">db</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">find</span><span class="o">().</span><span class="n">pretty</span><span class="o">()</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s">&quot;_id&quot;</span> <span class="k">:</span> <span class="kt">ObjectId</span><span class="o">(</span><span class="err">&quot;526</span><span class="kt">ecf6f7e04ab5f2d1a12ba</span><span class="err">&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="s">&quot;firstName&quot;</span> <span class="k">:</span> <span class="err">&quot;</span><span class="kt">Eugene</span><span class="err">&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="s">&quot;lastName&quot;</span> <span class="k">:</span> <span class="err">&quot;</span><span class="kt">Platonov</span><span class="err">&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="s">&quot;age&quot;</span> <span class="k">:</span> <span class="err">27</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s">&quot;_id&quot;</span> <span class="k">:</span> <span class="kt">ObjectId</span><span class="o">(</span><span class="err">&quot;526</span><span class="kt">ecf817e04ab5f2d1a12bb</span><span class="err">&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="s">&quot;firstName&quot;</span> <span class="k">:</span> <span class="err">&quot;</span><span class="kt">Joe</span><span class="err">&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="s">&quot;age&quot;</span> <span class="k">:</span> <span class="err">23</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>findByFirstName("Eugene")</code> will return Future of Success, but <code>findByFirstName("Joe")</code>
+will return you Future of Failure with ugly <code>java.util.NoSuchElementException: None.get</code> which
+points to the line where your macro-generated reader is defined.</p>
+
+<p>Here is another, even more interesting, but much harder to spot problem:</p>
+
+<p>If you insert your person doc via mongo shell</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'> <span class="n">db</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">insert</span><span class="o">({</span><span class="n">firstName</span><span class="k">:</span> <span class="err">&quot;</span><span class="kt">Eugene</span><span class="err">&quot;</span><span class="o">,</span> <span class="n">lastName</span><span class="k">:</span> <span class="err">&quot;</span><span class="kt">Platonov</span><span class="err">&quot;</span><span class="o">,</span> <span class="n">age</span><span class="k">:</span> <span class="err">27</span><span class="o">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>the type of <code>age</code> field will be &#8230; right, <a href="http://docs.mongodb.org/manual/core/shell-types/">Double</a>.
+Despite that mongo shell will show you <code>"age" : 27</code> when you search for that document.
+And again reactivemongo will throw a <code>NoSuchElementException</code> exception at you. Sigh.</p>
+
+<p>To avoid it insert integers as <code>NumberInt</code>s</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">db</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">insert</span><span class="o">({</span><span class="n">firstName</span><span class="k">:</span> <span class="err">&quot;</span><span class="kt">Eugene</span><span class="err">&quot;</span><span class="o">,</span> <span class="n">lastName</span><span class="k">:</span> <span class="err">&quot;</span><span class="kt">Platonov</span><span class="err">&quot;</span><span class="o">,</span> <span class="n">age</span><span class="k">:</span> <span class="kt">NumberInt</span><span class="o">(</span><span class="err">27</span><span class="o">)})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I think reactive mongo should be more explicit about what went wrong and hopefully
+this will be <a href="https://github.com/ReactiveMongo/ReactiveMongo/pull/131">fixed soon</a>, but if not, you know where the dog lies buried.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka: Stop Your Router Gracefully]]></title>

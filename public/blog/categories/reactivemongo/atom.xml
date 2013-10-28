@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: reactivemongo | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/reactivemongo/atom.xml" rel="self"/>
+  <link href="http://daodecode.com/"/>
+  <updated>2013-10-28T17:28:34-04:00</updated>
+  <id>http://daodecode.com/</id>
+  <author>
+    <name><![CDATA[Eugene Platonov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ReactiveMongo, macros and  NoSuchElementException: None.get]]></title>
+    <link href="http://daodecode.com/blog/2013/10/27/reactivemongo/"/>
+    <updated>2013-10-27T20:40:00-04:00</updated>
+    <id>http://daodecode.com/blog/2013/10/27/reactivemongo</id>
+    <content type="html"><![CDATA[<p><a href="http://reactivemongo.org/">ReactiveMongo</a> employs <a href="http://scalamacros.org/">scala macros</a>
+ to generate readers(deserializers) and writers(serializers)
+for scala case classes. They work pretty good, but sometimes you can get a
+<code>java.lang.NoSuchElementException</code> with message <code>None.get</code> :(</p>
+
+<p>Let's say you have
+``` scala
+case class Person(fisrtName: String, lastName: String, age: Int)</p>
+
+<p>object readers {
+  implicit val personReader = Macros.reader[Person]
+}</p>
+
+<p>```</p>
+
+<p>and somewhere in your code you use it
+<code>scala
+import readers._
+// ...
+def findByFirstName(fName: String) =
+  personCollection.find(BSONDocument("firstName" -&gt; fName)).one[Person]
+</code></p>
+
+<p>if your data is correct you are good, but let's say you have some corrupted documents, for example <code>Joe</code> doesn't have last name
+```</p>
+
+<blockquote><p>db.person.find().pretty()
+{</p>
+
+<pre><code>"_id" : ObjectId("526ecf6f7e04ab5f2d1a12ba"),
+"firstName" : "Eugene",
+"lastName" : "Platonov",
+"age" : 27
+</code></pre>
+
+<p>}
+{</p>
+
+<pre><code>"_id" : ObjectId("526ecf817e04ab5f2d1a12bb"),
+"firstName" : "Joe",
+"age" : 23
+</code></pre>
+
+<p>}
+```</p></blockquote>
+
+<p><code>findByFirstName("Eugene")</code> will return Future of Success, but <code>findByFirstName("Joe")</code>
+will return you Future of Failure with ugly <code>java.util.NoSuchElementException: None.get</code> which
+points to the line where your macro-generated reader is defined.</p>
+
+<p>Here is another, even more interesting, but much harder to spot problem:</p>
+
+<p>If you insert your person doc via mongo shell</p>
+
+<p><code>
+ db.person.insert({firstName: "Eugene", lastName: "Platonov", age: 27})
+</code>
+the type of <code>age</code> field will be ... right, <a href="http://docs.mongodb.org/manual/core/shell-types/">Double</a>.
+Despite that mongo shell will show you <code>"age" : 27</code> when you search for that document.
+And again reactivemongo will throw a <code>NoSuchElementException</code> exception at you. Sigh.</p>
+
+<p>To avoid it insert integers as <code>NumberInt</code>s</p>
+
+<p><code>
+db.person.insert({firstName: "Eugene", lastName: "Platonov", age: NumberInt(27)})
+</code></p>
+
+<p>I think reactive mongo should be more explicit about what went wrong and hopefully
+this will be <a href="https://github.com/ReactiveMongo/ReactiveMongo/pull/131">fixed soon</a>, but if not, you know where the dog lies buried.</p>
+]]></content>
+  </entry>
+  
+</feed>
