@@ -4,7 +4,7 @@
   <title><![CDATA[Category: idea | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/idea/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-10-28T20:24:20-04:00</updated>
+  <updated>2013-10-29T09:10:31-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -42,7 +42,7 @@ Listening for transport dt_socket at address: 5005
 
 <p>Then open your project in IDEA (you can generate IDEA project files using
 <a href="https://github.com/mpeltonen/sbt-idea">sbt-idea</a> plugin) and create remote debug configuration.
-{% img /images/sbt-debug/idea.debug.configuration.png %}
+<img src="/images/sbt-debug/idea.debug.configuration.png">
 You can change port, but 5005 will do in our case, so you literaly can save default configuration.
 Run it and you should get the following line in IDEA console:
 <code>
@@ -50,7 +50,7 @@ Connected to the target VM, address: 'localhost:5005', transport: 'socket'
 </code></p>
 
 <p>After that put a breakpoint inside your plugin command, switch to sbt console, run your command and here you go!
-{% img /images/sbt-debug/idea.breakpoint.in.action.png %}</p>
+<img src="/images/sbt-debug/idea.breakpoint.in.action.png"></p>
 ]]></content>
   </entry>
   
