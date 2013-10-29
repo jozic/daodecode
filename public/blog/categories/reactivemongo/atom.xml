@@ -4,7 +4,7 @@
   <title><![CDATA[Category: reactivemongo | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/reactivemongo/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-10-28T17:28:34-04:00</updated>
+  <updated>2013-10-28T20:24:20-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ReactiveMongo, macros and  NoSuchElementException: None.get]]></title>
-    <link href="http://daodecode.com/blog/2013/10/27/reactivemongo/"/>
+    <link href="http://daodecode.com/blog/2013/10/27/reactivemongo-macros-and-nosuchelementexception-none-get/"/>
     <updated>2013-10-27T20:40:00-04:00</updated>
-    <id>http://daodecode.com/blog/2013/10/27/reactivemongo</id>
+    <id>http://daodecode.com/blog/2013/10/27/reactivemongo-macros-and-nosuchelementexception-none-get</id>
     <content type="html"><![CDATA[<p><a href="http://reactivemongo.org/">ReactiveMongo</a> employs <a href="http://scalamacros.org/">scala macros</a>
  to generate readers(deserializers) and writers(serializers)
 for scala case classes. They work pretty good, but sometimes you can get a
