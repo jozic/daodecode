@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Debug an sbt plugin in IntelliJ IDEA - Dao De Code</title>
+  <title>Category: typesafe-config - Dao De Code</title>
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="So you have your own sbt plugin (or someone&#8217;s plugin if you are not so cool and sexy) and you want to debug it.
-It happens that there is &hellip;">
+  <meta name="description" content="Category: typesafe-config">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ It happens that there is &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/">
+  <link rel="canonical" href="http://daodecode.com/blog/categories/typesafe-config/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,137 +75,36 @@ It happens that there is &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Debug an Sbt Plugin in IntelliJ IDEA</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-19T12:51:00-04:00" pubdate data-updated="true">Apr 19<span>th</span>, 2013</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Typesafe-config</h1>
     
   </header>
-
-
-<div class="entry-content"><p>So you have your own sbt plugin (or someone&#8217;s plugin if you are not so cool and sexy) and you want to debug it.
-It happens that there is nothing easier than that. If you run sbt through <a href="https://github.com/paulp/sbt-extras">sbt-extras</a> script (if you don&#8217;t you should)
-just start your test sbt app with the plugin added to the build with the following command</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sbt -jvm-debug 5005</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can use any port, I use 5005 because it&#8217;s a default port for remote debug configuration in <a href="http://www.jetbrains.com/idea/">IntelliJ IDEA</a> which I use for scala development.
-And if you are cool and sexy, you know&#8230; :)</p>
-
-<p>This is how your sbt console should look like after you start it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>jozic@laptop ~/projects/sbt-about-plugins $ sbt -jvm-debug 5005
-</span><span class='line'>Detected sbt version 0.12.3
-</span><span class='line'>Starting sbt: invoke with -help for other options
-</span><span class='line'>Listening for transport dt_socket at address: 5005
-</span><span class='line'>[info] Loading global plugins from /home/jozic/.sbt/plugins
-</span><span class='line'>[info] Loading project definition from /home/jozic/projects/sbt-about-plugins/project
-</span><span class='line'>[info] Set current project to sbt-about-plugins (in build file:/home/jozic/projects/sbt-about-plugins/)
-</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then open your project in IDEA (you can generate IDEA project files using
-<a href="https://github.com/mpeltonen/sbt-idea">sbt-idea</a> plugin) and create remote debug configuration.
-<img src="/images/sbt-debug/idea.debug.configuration.png">
-You can change port, but 5005 will do in our case, so you literaly can save default configuration.
-Run it and you should get the following line in IDEA console:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Connected to the target VM, address: 'localhost:5005', transport: 'socket'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After that put a breakpoint inside your plugin command, switch to sbt console, run your command and here you go!
-<img src="/images/sbt-debug/idea.breakpoint.in.action.png"></p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Eugene Platonov</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2014</h2>
+
+<article>
+  
+<h1><a href="/blog/2014/02/04/override-a-list-property-for-typesafe-config/">Override a list property for Typesafe Config</a></h1>
+<time datetime="2014-02-04T19:39:00-05:00" pubdate><span class='month'>Feb</span> <span class='day'>04</span> <span class='year'>2014</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/java/'>java</a>, <a class='category' href='/blog/categories/scala/'>scala</a>, <a class='category' href='/blog/categories/typesafe-config/'>typesafe-config</a></span>
+</footer>
 
 
-<time datetime="2013-04-19T12:51:00-04:00" pubdate data-updated="true">Apr 19<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/idea/'>idea</a>, <a class='category' href='/blog/categories/sbt/'>sbt</a>, <a class='category' href='/blog/categories/scala/'>scala</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/" data-via="" data-counturl="http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="small"></div>
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2013/03/25/castgc-cookie-and-httponly-flag/" title="Previous Post: CASTGC Cookie and HttpOnly Flag">&laquo; CASTGC Cookie and HttpOnly Flag</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2013/07/12/akka-stop-your-router-gracefully/" title="Next Post: Akka: Stop Your Router Gracefully">Akka: Stop Your Router Gracefully &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -266,10 +164,7 @@ Run it and you should get the following line in IDEA console:</p>
       var disqus_shortname = 'daodecode';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/';
-        var disqus_url = 'http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scala | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-10-29T09:10:31-04:00</updated>
+  <updated>2014-02-06T11:34:15-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,37 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Override a list property for Typesafe Config]]></title>
+    <link href="http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config/"/>
+    <updated>2014-02-04T19:39:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config</id>
+    <content type="html"><![CDATA[<p>Today I naively was trying to override a list property for a unit test with the following code
+<code>scala
+System.setProperty("list.property", """[ "val1", "val2"]""")
+</code></p>
+
+<p>The tested code is reading the list property using <a href="https://github.com/typesafehub/config">typesafe config</a> library</p>
+
+<p><code>scala
+val listProperty = config.getListString.asScala.toSet
+</code></p>
+
+<p>That was throwing
+<code>com.typesafe.config.ConfigException$WrongType: system properties: list.property has type STRING rather than LIST</code></p>
+
+<p>so I've googled a <a href="https://github.com/typesafehub/config/issues/69">solution</a> for overriding list properties from
+command line, which is same for overriding in code</p>
+
+<p>Here is how it looks now</p>
+
+<p><code>scala
+System.setProperty("list.property.0", "val1")
+System.setProperty("list.property.1", "val2")
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ReactiveMongo, macros and  NoSuchElementException: None.get]]></title>
@@ -431,26 +462,6 @@ To make sure that it allows access when ticket is valid let's add this</p>
 <p>```</p>
 
 <p>Full source code can be found on <a href="https://github.com/jozic/play-security-authenticated-tests">github</a> in branches play20 and play20 correspondently.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Camel and Scala 2.10]]></title>
-    <link href="http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10/"/>
-    <updated>2013-02-28T23:33:00-05:00</updated>
-    <id>http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10</id>
-    <content type="html"><![CDATA[<p><a href="http://camel.apache.org/">Camel</a> and <a href="http://www.scala-lang.org/">Scala</a> is a good combination,
-but if you like to be on the bleeding edge and almost done converting your scala app to <a href="http://www.scala-lang.org/node/27499">2.10</a>
-you can find that camel still doesn't have a stable release supporting scala 2.10.
-So SNAPSHOT will do the trick in this case, but you know... it's a SNAPSHOT :)<br/>
-All you need is apache snapshots repo and camel-scala 2.11-SNAPSHOT</p>
-
-<p>``` scala
-resolvers += "Apache Snapshots" at "http://repository.apache.org/snapshots/"</p>
-
-<p>libraryDependencies += "org.apache.camel" % "camel-scala" % "2.11-SNAPSHOT"
-```
-Add those to your sbt build and you are all set.</p>
 ]]></content>
   </entry>
   

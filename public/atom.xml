@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2013-10-29T09:10:31-04:00</updated>
+  <updated>2014-02-06T11:34:15-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Override a list property for Typesafe Config]]></title>
+    <link href="http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config/"/>
+    <updated>2014-02-04T19:39:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config</id>
+    <content type="html"><![CDATA[<p>Today I naively was trying to override a list property for a unit test with the following code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">System</span><span class="o">.</span><span class="n">setProperty</span><span class="o">(</span><span class="s">&quot;list.property&quot;</span><span class="o">,</span> <span class="s">&quot;&quot;&quot;[ &quot;val1&quot;, &quot;val2&quot;]&quot;&quot;&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The tested code is reading the list property using <a href="https://github.com/typesafehub/config">typesafe config</a> library</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">listProperty</span> <span class="k">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getListString</span><span class="o">.</span><span class="n">asScala</span><span class="o">.</span><span class="n">toSet</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That was throwing
+<code>com.typesafe.config.ConfigException$WrongType: system properties: list.property has type STRING rather than LIST</code></p>
+
+<p>so I&#8217;ve googled a <a href="https://github.com/typesafehub/config/issues/69">solution</a> for overriding list properties from
+command line, which is same for overriding in code</p>
+
+<p>Here is how it looks now</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">System</span><span class="o">.</span><span class="n">setProperty</span><span class="o">(</span><span class="s">&quot;list.property.0&quot;</span><span class="o">,</span> <span class="s">&quot;val1&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="nc">System</span><span class="o">.</span><span class="n">setProperty</span><span class="o">(</span><span class="s">&quot;list.property.1&quot;</span><span class="o">,</span> <span class="s">&quot;val2&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ReactiveMongo, macros and  NoSuchElementException: None.get]]></title>
