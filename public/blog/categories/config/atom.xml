@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: config | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/config/atom.xml" rel="self"/>
+  <link href="http://daodecode.com/"/>
+  <updated>2014-02-05T23:09:23-05:00</updated>
+  <id>http://daodecode.com/</id>
+  <author>
+    <name><![CDATA[Eugene Platonov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Override a list property for Typesafe Config]]></title>
+    <link href="http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config/"/>
+    <updated>2014-02-04T19:39:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config</id>
+    <content type="html"><![CDATA[<p>Today I naively was trying to override a list property for a unit test with the following code
+<code>scala
+System.setProperty("list.property", """[ "val1", "val2"]""")
+</code></p>
+
+<p>The tested code is reading the list property using <a href="https://github.com/typesafehub/config">typesafe config</a> library</p>
+
+<p><code>scala
+val listProperty = config.getListString.asScala.toSet
+</code></p>
+
+<p>That was throwing
+<code>com.typesafe.config.ConfigException$WrongType: system properties: list.property has type STRING rather than LIST</code>
+so I've googled a <a href="https://github.com/typesafehub/config/issues/69">solution</a> for overriding list properties from command line</p>
+
+<p>So now it's</p>
+
+<p><code>scala
+System.setProperty("list.property.0", "val1")
+System.setProperty("list.property.1", "val2")
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -39,8 +39,14 @@
         <lastmod>2013-10-28T19:33:04-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config/
+        </loc>
+        <lastmod>2014-02-04T20:46:35-05:00</lastmod>
+    </url>
+    <url>
         <loc>http://daodecode.com/</loc>
-        <lastmod>2013-10-28T19:33:04-04:00</lastmod>
+        <lastmod>2014-02-04T20:46:35-05:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/robots.txt</loc>
@@ -48,6 +54,6 @@
     </url>
     <url>
         <loc>http://daodecode.com/blog/archives/</loc>
-        <lastmod>2013-10-28T19:33:04-04:00</lastmod>
+        <lastmod>2014-02-04T20:46:35-05:00</lastmod>
     </url>
 </urlset>
