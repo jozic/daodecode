@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-02-06T11:34:15-05:00</updated>
+  <updated>2014-02-22T22:40:47-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,27 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sbt Plugins: No Default Package Please]]></title>
+    <link href="http://daodecode.com/blog/2014/02/18/sbt-plugins-no-default-package-please/"/>
+    <updated>2014-02-18T16:46:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/02/18/sbt-plugins-no-default-package-please</id>
+    <content type="html"><![CDATA[<p>Usually people don&#8217;t put sbt builds in a package (I&#8217;m talking about scala files here), especially for simple and small projects.
+And they easily can use all the sbt plugins. <br/>
+But there are other users who have bigger and more complex builds.
+So they put their builds in packages and then they discover they can use only plugins which themselves defined in packages. Bummer!</p>
+
+<p>Scala, as well as Java, does allow classes in <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.4.2">default or unnamed</a> package, but those classes can be accessed within default package only.
+There is literally <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.5">no way</a> to import a class from default package.
+Thus when someone creates an sbt plugin and puts it in default package, (s)he makes owners of packaged builds
+ feel almost phisical pain when they try to use the plugin.</p>
+
+<p>So if you are an author of an sbt plugin, please consider to put it into a package. Doing otherwise violates
+<a href="https://github.com/sbt/sbt/blob/0.13/src/sphinx/Extending/Plugins-Best-Practices.rst#dont-use-default-package">best practices</a>
+ and makes God to kill a kitten.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Override a list property for Typesafe Config]]></title>

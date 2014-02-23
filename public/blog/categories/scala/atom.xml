@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scala | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-02-06T11:34:15-05:00</updated>
+  <updated>2014-02-22T22:40:47-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,27 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sbt Plugins: No Default Package Please]]></title>
+    <link href="http://daodecode.com/blog/2014/02/18/sbt-plugins-no-default-package-please/"/>
+    <updated>2014-02-18T16:46:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/02/18/sbt-plugins-no-default-package-please</id>
+    <content type="html"><![CDATA[<p>Usually people don't put sbt builds in a package (I'm talking about scala files here), especially for simple and small projects.
+And they easily can use all the sbt plugins. <br/>
+But there are other users who have bigger and more complex builds.
+So they put their builds in packages and then they discover they can use only plugins which themselves defined in packages. Bummer!</p>
+
+<p>Scala, as well as Java, does allow classes in <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.4.2">default or unnamed</a> package, but those classes can be accessed within default package only.
+There is literally <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.5">no way</a> to import a class from default package.
+Thus when someone creates an sbt plugin and puts it in default package, (s)he makes owners of packaged builds
+ feel almost phisical pain when they try to use the plugin.</p>
+
+<p>So if you are an author of an sbt plugin, please consider to put it into a package. Doing otherwise violates
+<a href="https://github.com/sbt/sbt/blob/0.13/src/sphinx/Extending/Plugins-Best-Practices.rst#dont-use-default-package">best practices</a>
+ and makes God to kill a kitten.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Override a list property for Typesafe Config]]></title>
@@ -285,183 +306,6 @@ Connected to the target VM, address: 'localhost:5005', transport: 'socket'
 
 <p>After that put a breakpoint inside your plugin command, switch to sbt console, run your command and here you go!
 <img src="/images/sbt-debug/idea.breakpoint.in.action.png"></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Testing Security.Authenticated in Play 2.0 and 2.1]]></title>
-    <link href="http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/"/>
-    <updated>2013-03-08T21:00:00-05:00</updated>
-    <id>http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1</id>
-    <content type="html"><![CDATA[<p>You have a <a href="http://www.playframework.com/">Play</a> application and let's say you want to add some simple authentication logic to restrict access to your actions.
-You want all your users to provide a ticket (e.g <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">cas proxy ticket</a>)
-in a request header, so you can use the ticket to authenticate them.</p>
-
-<p>Play's <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$">Security.Authenticated</a>
-to the rescue!</p>
-
-<p>You can come up with something like this in Play 2.1:</p>
-
-<p>``` scala
-trait Secured {</p>
-
-<p>  val logger = Logger("secured")</p>
-
-<p>  final def fail(reason: String) = {</p>
-
-<pre><code>logger.debug(s"Access attempt failed: $reason")
-Unauthorized("must be authenticated")
-</code></pre>
-
-<p>  }</p>
-
-<p>  final def secured<a href="action:%20Action[A]">A</a> =</p>
-
-<pre><code>Security.Authenticated(
-  req =&gt; req.headers.get("authTicket"),
-  _ =&gt; fail("no ticket found")) {
-  ticket =&gt; Action(action.parser) {
-    request =&gt; withTicket(ticket) {
-      action(request)
-    }
-  }
-}
-</code></pre>
-
-<p>  private def withTicket(ticket: String)(produceResult: => Result): Result =</p>
-
-<pre><code>Async {
-  isValid(ticket) map {
-    valid =&gt; if (valid) produceResult else fail(s"provided ticket $ticket is invalid")
-  }
-}
-</code></pre>
-
-<p>  def isValid(ticket: String): Future[Boolean]
-}
-<code>``
-In Play 2.0 it looks almost same except that</code>isValid<code>returns _old_ play's</code>Promise<code>instead of scala's</code>Future`.</p>
-
-<p>And you can use it like this:</p>
-
-<p>``` scala</p>
-
-<pre><code>def securedAction = secured {
-  Action {
-    request =&gt; Ok("Am I protected?")
-  }
-}
-</code></pre>
-
-<p>```</p>
-
-<p>All good, but how do we know it works? Test it!</p>
-
-<p>Let's create a fake controller which has both secured and non-secured actions. And we'll use it in our tests, or rather <a href="http://etorreborre.github.com/specs2/">specs</a>.</p>
-
-<p>``` scala
-  object FakeController extends Controller with Secured {</p>
-
-<pre><code>def securedAction = secured {
-  Action {
-    request =&gt; Ok("Am I protected?")
-  }
-}
-
-def nonSecuredAction = Action {
-  request =&gt; Ok("I don't care")
-}
-
-def isValid(ticket: String) = Promise.pure(ticket == "valid")
-</code></pre>
-
-<p>  }
-```</p>
-
-<p>To test that <code>authTicket</code> param is required we can have something like this:</p>
-
-<p>``` scala</p>
-
-<pre><code>"return UNAUTHORIZED if `authTicket` param is not provided" in {
-  running(app) {
-    val result = FakeController.securedAction process FakeRequest()
-    status(result) must_== UNAUTHORIZED
-    contentAsString(result) must_== "must be authenticated"
-  }
-}
-</code></pre>
-
-<p>```</p>
-
-<p>Here <code>app</code> is a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.test.FakeApplication">FakeApplication</a>
- and <code>process</code> is our method (added through implicits) which returns a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Result">Result</a>
-  given a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Request">Request</a>.</p>
-
-<p>Please note in Play 2.0 <code>status</code> and <code>contentAsString</code> don't know how to handle <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.AsyncResult">AsyncResults</a>,
-so with this implementation of <code>withTicket</code> you need to do some trible dance to make it work.</p>
-
-<p>In Play 2.0 <code>Authenticated</code> returnes <code>Action[(Action[A], A)]</code> so our <code>process</code> looks like this:</p>
-
-<p>``` scala
-  implicit def action2actionExecutor<a href="wrapped:%20Action[(Action[A],%20A">A</a>]): ActionExecutor[A]
-  = new ActionExecutor<a href="wrapped">A</a></p>
-
-<p>  class ActionExecutor<a href="wrapped:%20Action[(Action[A],%20A">A</a>]) {</p>
-
-<pre><code>def process(request: Request[A]): Result = wrapped.parser(request).run.await.get match {
-  case Left(errorResult) =&gt; errorResult
-  case Right((innerAction, _)) =&gt; innerAction(request)
-}
-</code></pre>
-
-<p>  }
-```</p>
-
-<p>in Play 2.1 we get just <a href="">EssentialAction</a> (and we can use <a href="">implicit class</a>) so it looks much simple:</p>
-
-<p>``` scala
-  implicit class ActionExecutor(action: EssentialAction) {</p>
-
-<pre><code>def process[A](request: Request[A]): Result =
-  concurrent.Await.result(action(request).run, Duration(1, "sec"))
-</code></pre>
-
-<p>  }
-```</p>
-
-<p>To test what happens if <code>authTicket</code> is provided but is not valid we can do the following:</p>
-
-<p>``` scala</p>
-
-<pre><code>def requestWithAuthTicket(ticket: String = "invalid") =
-  FakeRequest().withHeaders("authTicket" -&gt; ticket)
-
-"return UNAUTHORIZED if `authTicket` param is not valid" in {
-  running(app) {
-    val result = FakeController.securedAction process requestWithAuthTicket()
-    status(result) must_== UNAUTHORIZED
-    contentAsString(result) must_== "must be authenticated"
-  }
-}
-</code></pre>
-
-<p>```
-To make sure that it allows access when ticket is valid let's add this</p>
-
-<p>``` scala</p>
-
-<pre><code>"return whatever it returns if `authTicket` param is valid" in {
-  running(app) {
-    val result = FakeController.securedAction process requestWithAuthTicket(ticket = "valid")
-    status(result) must_== OK
-    contentAsString(result) must_== "Am I protected?"
-  }
-}
-</code></pre>
-
-<p>```</p>
-
-<p>Full source code can be found on <a href="https://github.com/jozic/play-security-authenticated-tests">github</a> in branches play20 and play20 correspondently.</p>
 ]]></content>
   </entry>
   
