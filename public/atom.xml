@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-02-22T22:40:47-05:00</updated>
+  <updated>2014-04-29T13:47:12-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Call Scala curried functions from Java]]></title>
+    <link href="http://daodecode.com/blog/2014/04/29/call-scala-curried-functions-from-java/"/>
+    <updated>2014-04-29T13:40:00-04:00</updated>
+    <id>http://daodecode.com/blog/2014/04/29/call-scala-curried-functions-from-java</id>
+    <content type="html"><![CDATA[<p>For some reason I thought scala curried functions is one of the features you will have troubles using from Java. But it happens that you can perfectly call a curried Scala function</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">A</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">curried</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">toInt</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>from Java</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">new</span> <span class="nf">A</span><span class="o">().</span><span class="na">curried</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="s">&quot;7&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sbt Plugins: No Default Package Please]]></title>
@@ -26,7 +51,7 @@ So they put their builds in packages and then they discover they can use only pl
 <p>Scala, as well as Java, does allow classes in <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.4.2">default or unnamed</a> package, but those classes can be accessed within default package only.
 There is literally <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.5">no way</a> to import a class from default package.
 Thus when someone creates an sbt plugin and puts it in default package, (s)he makes owners of packaged builds
- feel almost phisical pain when they try to use the plugin.</p>
+ feel almost physical pain when they try to use the plugin.</p>
 
 <p>So if you are an author of an sbt plugin, please consider to put it into a package. Doing otherwise violates
 <a href="https://github.com/sbt/sbt/blob/0.13/src/sphinx/Extending/Plugins-Best-Practices.rst#dont-use-default-package">best practices</a>

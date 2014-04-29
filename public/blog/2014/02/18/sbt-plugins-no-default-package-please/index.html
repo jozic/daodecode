@@ -111,7 +111,7 @@ So they put their builds in packages and then they discover they can use only pl
 <p>Scala, as well as Java, does allow classes in <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.4.2">default or unnamed</a> package, but those classes can be accessed within default package only.
 There is literally <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.5">no way</a> to import a class from default package.
 Thus when someone creates an sbt plugin and puts it in default package, (s)he makes owners of packaged builds
- feel almost phisical pain when they try to use the plugin.</p>
+ feel almost physical pain when they try to use the plugin.</p>
 
 <p>So if you are an author of an sbt plugin, please consider to put it into a package. Doing otherwise violates
 <a href="https://github.com/sbt/sbt/blob/0.13/src/sphinx/Extending/Plugins-Best-Practices.rst#dont-use-default-package">best practices</a>
@@ -166,6 +166,8 @@ Thus when someone creates an sbt plugin and puts it in default package, (s)he ma
         <a class="basic-alignment left" href="/blog/2014/02/04/override-a-list-property-for-typesafe-config/" title="Previous Post: Override a list property for Typesafe Config">&laquo; Override a list property for Typesafe Config</a>
       
       
+        <a class="basic-alignment right" href="/blog/2014/04/29/call-scala-curried-functions-from-java/" title="Next Post: Call Scala curried functions from Java">Call Scala curried functions from Java &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -185,6 +187,10 @@ Thus when someone creates an sbt plugin and puts it in default package, (s)he ma
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/29/call-scala-curried-functions-from-java/">Call Scala curried functions from Java</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/18/sbt-plugins-no-default-package-please/">Sbt Plugins: No Default Package Please</a>
       </li>
     
@@ -200,10 +206,6 @@ Thus when someone creates an sbt plugin and puts it in default package, (s)he ma
         <a href="/blog/2013/07/12/akka-stop-your-router-gracefully/">Akka: Stop Your Router Gracefully</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/">Debug an sbt plugin in IntelliJ IDEA</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -213,7 +215,7 @@ Thus when someone creates an sbt plugin and puts it in default package, (s)he ma
 
 <section>
   <h1>Categories</h1>
-    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 107.5%'>akka</a> <a href='/blog/categories/camel' style='font-size: 107.5%'>camel</a> <a href='/blog/categories/cas' style='font-size: 107.5%'>cas</a> <a href='/blog/categories/idea' style='font-size: 107.5%'>idea</a> <a href='/blog/categories/java' style='font-size: 122.5%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 107.5%'>lots of parens</a> <a href='/blog/categories/mongo' style='font-size: 107.5%'>mongo</a> <a href='/blog/categories/play' style='font-size: 115.0%'>play</a> <a href='/blog/categories/racket' style='font-size: 107.5%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 107.5%'>reactivemongo</a> <a href='/blog/categories/router' style='font-size: 107.5%'>router</a> <a href='/blog/categories/sbt' style='font-size: 115.0%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typesafe-config' style='font-size: 107.5%'>typesafe-config</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 106.66666666666667%'>akka</a> <a href='/blog/categories/camel' style='font-size: 106.66666666666667%'>camel</a> <a href='/blog/categories/cas' style='font-size: 106.66666666666667%'>cas</a> <a href='/blog/categories/idea' style='font-size: 106.66666666666667%'>idea</a> <a href='/blog/categories/java' style='font-size: 126.66666666666667%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 106.66666666666667%'>lots of parens</a> <a href='/blog/categories/mongo' style='font-size: 106.66666666666667%'>mongo</a> <a href='/blog/categories/play' style='font-size: 113.33333333333333%'>play</a> <a href='/blog/categories/racket' style='font-size: 106.66666666666667%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 106.66666666666667%'>reactivemongo</a> <a href='/blog/categories/router' style='font-size: 106.66666666666667%'>router</a> <a href='/blog/categories/sbt' style='font-size: 113.33333333333333%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typesafe-config' style='font-size: 106.66666666666667%'>typesafe-config</a> </span>
 </section>
 
   
