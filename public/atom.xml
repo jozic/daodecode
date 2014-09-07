@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-04-29T13:47:12-04:00</updated>
+  <updated>2014-09-06T20:50:59-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,181 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Redis Lua Tips]]></title>
+    <link href="http://daodecode.com/blog/2014/09/06/redis-lua-tips/"/>
+    <updated>2014-09-06T18:10:00-04:00</updated>
+    <id>http://daodecode.com/blog/2014/09/06/redis-lua-tips</id>
+    <content type="html"><![CDATA[<p>As you may know <a href="http://redis.io">redis</a> <a href="http://redis.io/commands/EVAL">allows</a> you to pass a <a href="http://www.lua.org/">Lua</a> script which will be executed on server side.
+What&#8217;s great about it is that it will be executed atomically, as redis is single-threaded.  <br/>
+Though beware of long-running scripts as they can hug the server.
+ So what good can you do with lua? Actually a lot, and here some simple use cases</p>
+
+<h2>Count keys by pattern</h2>
+
+<p>Sometimes you just want to know how many keys named by some pattern you have.
+You can always run <a href="http://redis.io/commands/keys">KEYS</a> command, but it prints every single key,
+so if you have thousands of them it can be pretty overwhelming.
+  Instead you can use this simple command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>EVAL "return #redis.call('KEYS', 'your pattern goes here')" 0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example, let&#8217;s say we have:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1:6379&gt; KEYS *
+</span><span class='line'>1) "daodecode:post:2:tags"
+</span><span class='line'>2) "daodecode:post:12:tags"
+</span><span class='line'>3) "daodecode:post:2:title"
+</span><span class='line'>4) "daodecode:post:10:tags"
+</span><span class='line'>5) "daodecode:post:10:title"
+</span><span class='line'>6) "daodecode:post:12:title"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>let&#8217;s get number of keys with tags:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1:6379&gt; EVAL "return #redis.call('KEYS', 'daodecode:post:*:tags')" 0
+</span><span class='line'>(integer) 3</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&#8217;ve got the idea&#8230;</p>
+
+<h2>Set expiration only if it has not already been set</h2>
+
+<p>Let&#8217;s say you get some events from somewhere, extract some info from the events and add it to a redis set.
+And you want your set to expire at some point, so you want to set a <a href="http://redis.io/commands/ttl">ttl</a> for the set, but only once.
+ Redis will kindly create a set key if it didn&#8217;t exist before.
+ But if you will send <a href="http://redis.io/commands/expire">EXPIRE</a> command along with every <a href="http://redis.io/commands/sadd">SADD</a> command,
+ redis will kindly overwrite existing ttl with the new value. Lua to the rescue:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 &lt;KEY_NAME&gt; &lt;TTL&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1:6379&gt; SADD s1 m1
+</span><span class='line'>(integer) 1
+</span><span class='line'>127.0.0.1:6379&gt; TTL s1
+</span><span class='line'>(integer) -1
+</span><span class='line'>127.0.0.1:6379&gt; EXPIRE s1 30
+</span><span class='line'>(integer) 1
+</span><span class='line'>127.0.0.1:6379&gt; TTL s1
+</span><span class='line'>(integer) 22
+</span><span class='line'>127.0.0.1:6379&gt; EXPIRE s1 30
+</span><span class='line'>(integer) 1
+</span><span class='line'>127.0.0.1:6379&gt; TTL s1
+</span><span class='line'>(integer) 28
+</span><span class='line'>.0.0.1:6379&gt; SADD s2 m1
+</span><span class='line'>(integer) 1
+</span><span class='line'>127.0.0.1:6379&gt; EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 s2 30
+</span><span class='line'>(nil)
+</span><span class='line'>127.0.0.1:6379&gt; TTL s2
+</span><span class='line'>(integer) 27
+</span><span class='line'>127.0.0.1:6379&gt; EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 s2 30
+</span><span class='line'>(nil)
+</span><span class='line'>127.0.0.1:6379&gt; TTL s2
+</span><span class='line'>(integer) 20</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here you can see that we reset ttl for <code>s1</code>, but for <code>s2</code> we set ttl only for the first time, the second request didn&#8217;t change it</p>
+
+<h2>Add members to a sorted set only once</h2>
+
+<p>Redis gives us <a href="http://redis.io/commands#sorted_set">sorted sets</a> where we can add members along with scores associated with the members.
+If you <a href="http://redis.io/commands/zadd">ZADD</a> a member which already exists in the set its score will be overwritten.
+It could happen that you may want to add a member only once. The easy way is to check if member doesn&#8217;t exist with
+<a href="http://redis.io/commands/zscore">ZSCORE</a> command.
+But those two commands are not atomic and <a href="http://en.wikipedia.org/wiki/Race_condition">races</a> are possible. Lua is here again:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">if</span> <span class="ow">not</span> <span class="n">redis</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">ZSCORE&#39;</span><span class="p">,</span> <span class="n">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">then</span> <span class="k">return</span> <span class="n">redis</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">ZADD&#39;</span><span class="p">,</span> <span class="n">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">return</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZADD</span> <span class="n">s1</span> <span class="mi">1</span> <span class="n">m1</span>
+</span><span class='line'><span class="p">(</span><span class="n">integer</span><span class="p">)</span> <span class="mi">1</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZSCORE</span> <span class="n">s1</span> <span class="n">m1</span>
+</span><span class='line'><span class="s2">&quot;</span><span class="s">1&quot;</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZADD</span> <span class="n">s1</span> <span class="mi">2</span> <span class="n">m1</span>
+</span><span class='line'><span class="p">(</span><span class="n">integer</span><span class="p">)</span> <span class="mi">0</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZSCORE</span> <span class="n">s1</span> <span class="n">m1</span>
+</span><span class='line'><span class="s2">&quot;</span><span class="s">2&quot;</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">EVAL</span> <span class="s2">&quot;</span><span class="s">if not redis.call(&#39;ZSCORE&#39;, KEYS[1], ARGV[1]) then return redis.call(&#39;ZADD&#39;, KEYS[1], ARGV[2], ARGV[1]) else return 0 end;&quot;</span> <span class="mi">1</span> <span class="n">s1</span> <span class="n">m1</span> <span class="mi">3</span>
+</span><span class='line'><span class="p">(</span><span class="n">integer</span><span class="p">)</span> <span class="mi">0</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZSCORE</span> <span class="n">s1</span> <span class="n">m1</span>
+</span><span class='line'><span class="s2">&quot;</span><span class="s">2&quot;</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">EVAL</span> <span class="s2">&quot;</span><span class="s">if not redis.call(&#39;ZSCORE&#39;, KEYS[1], ARGV[1]) then return redis.call(&#39;ZADD&#39;, KEYS[1], ARGV[2], ARGV[1]) else return 0 end;&quot;</span> <span class="mi">1</span> <span class="n">s1</span> <span class="n">m2</span> <span class="mi">3</span>
+</span><span class='line'><span class="p">(</span><span class="n">integer</span><span class="p">)</span> <span class="mi">1</span>
+</span><span class='line'><span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="o">&gt;</span> <span class="n">ZSCORE</span> <span class="n">s1</span> <span class="n">m2</span>
+</span><span class='line'><span class="s2">&quot;</span><span class="s">3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we add a member <code>m1</code> to set <code>s1</code> with score <code>1</code>, then we add it again with score <code>2</code>. ZSCORE reveals that the score has been changed.
+Then with Lua script we add <code>m1</code> with score <code>3</code>, but only if ZSCORE returns <code>nil</code>, which is not true an as such doesn&#8217;t change the score of <code>m1</code>.
+But for new member <code>m2</code> with score <code>3</code> it works.</p>
+
+<p>These are only 3 simple use cases, but you can find it useful for many other things.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Call Scala curried functions from Java]]></title>

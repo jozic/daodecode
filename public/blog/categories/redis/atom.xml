@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: redis | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/redis/atom.xml" rel="self"/>
+  <link href="http://daodecode.com/"/>
+  <updated>2014-09-06T20:50:59-04:00</updated>
+  <id>http://daodecode.com/</id>
+  <author>
+    <name><![CDATA[Eugene Platonov]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Redis Lua Tips]]></title>
+    <link href="http://daodecode.com/blog/2014/09/06/redis-lua-tips/"/>
+    <updated>2014-09-06T18:10:00-04:00</updated>
+    <id>http://daodecode.com/blog/2014/09/06/redis-lua-tips</id>
+    <content type="html"><![CDATA[<p>As you may know <a href="http://redis.io">redis</a> <a href="http://redis.io/commands/EVAL">allows</a> you to pass a <a href="http://www.lua.org/">Lua</a> script which will be executed on server side.
+What's great about it is that it will be executed atomically, as redis is single-threaded.  <br/>
+Though beware of long-running scripts as they can hug the server.
+ So what good can you do with lua? Actually a lot, and here some simple use cases</p>
+
+<h2>Count keys by pattern</h2>
+
+<p>Sometimes you just want to know how many keys named by some pattern you have.
+You can always run <a href="http://redis.io/commands/keys">KEYS</a> command, but it prints every single key,
+so if you have thousands of them it can be pretty overwhelming.
+  Instead you can use this simple command:</p>
+
+<p><code>
+EVAL "return #redis.call('KEYS', 'your pattern goes here')" 0
+</code></p>
+
+<p>For example, let's say we have:</p>
+
+<p><code>
+127.0.0.1:6379&gt; KEYS *
+1) "daodecode:post:2:tags"
+2) "daodecode:post:12:tags"
+3) "daodecode:post:2:title"
+4) "daodecode:post:10:tags"
+5) "daodecode:post:10:title"
+6) "daodecode:post:12:title"
+</code></p>
+
+<p>let's get number of keys with tags:</p>
+
+<p><code>
+127.0.0.1:6379&gt; EVAL "return #redis.call('KEYS', 'daodecode:post:*:tags')" 0
+(integer) 3
+</code></p>
+
+<p>You've got the idea...</p>
+
+<h2>Set expiration only if it has not already been set</h2>
+
+<p>Let's say you get some events from somewhere, extract some info from the events and add it to a redis set.
+And you want your set to expire at some point, so you want to set a <a href="http://redis.io/commands/ttl">ttl</a> for the set, but only once.
+ Redis will kindly create a set key if it didn't exist before.
+ But if you will send <a href="http://redis.io/commands/expire">EXPIRE</a> command along with every <a href="http://redis.io/commands/sadd">SADD</a> command,
+ redis will kindly overwrite existing ttl with the new value. Lua to the rescue:</p>
+
+<p><code>
+EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 &lt;KEY_NAME&gt; &lt;TTL&gt;
+</code></p>
+
+<p>For example:</p>
+
+<p><code>
+127.0.0.1:6379&gt; SADD s1 m1
+(integer) 1
+127.0.0.1:6379&gt; TTL s1
+(integer) -1
+127.0.0.1:6379&gt; EXPIRE s1 30
+(integer) 1
+127.0.0.1:6379&gt; TTL s1
+(integer) 22
+127.0.0.1:6379&gt; EXPIRE s1 30
+(integer) 1
+127.0.0.1:6379&gt; TTL s1
+(integer) 28
+.0.0.1:6379&gt; SADD s2 m1
+(integer) 1
+127.0.0.1:6379&gt; EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 s2 30
+(nil)
+127.0.0.1:6379&gt; TTL s2
+(integer) 27
+127.0.0.1:6379&gt; EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 s2 30
+(nil)
+127.0.0.1:6379&gt; TTL s2
+(integer) 20
+</code></p>
+
+<p>Here you can see that we reset ttl for <code>s1</code>, but for <code>s2</code> we set ttl only for the first time, the second request didn't change it</p>
+
+<h2>Add members to a sorted set only once</h2>
+
+<p>Redis gives us <a href="http://redis.io/commands#sorted_set">sorted sets</a> where we can add members along with scores associated with the members.
+If you <a href="http://redis.io/commands/zadd">ZADD</a> a member which already exists in the set its score will be overwritten.
+It could happen that you may want to add a member only once. The easy way is to check if member doesn't exist with
+<a href="http://redis.io/commands/zscore">ZSCORE</a> command.
+But those two commands are not atomic and <a href="http://en.wikipedia.org/wiki/Race_condition">races</a> are possible. Lua is here again:</p>
+
+<p>``` lua
+if not redis.call('ZSCORE', KEYS[1], ARGV[1])</p>
+
+<pre><code>then return redis.call('ZADD', KEYS[1], ARGV[2], ARGV[1]) 
+else return 0
+</code></pre>
+
+<p>end;
+```</p>
+
+<p>Example:</p>
+
+<p><code>
+127.0.0.1:6379&gt; ZADD s1 1 m1
+(integer) 1
+127.0.0.1:6379&gt; ZSCORE s1 m1
+"1"
+127.0.0.1:6379&gt; ZADD s1 2 m1
+(integer) 0
+127.0.0.1:6379&gt; ZSCORE s1 m1
+"2"
+127.0.0.1:6379&gt; EVAL "if not redis.call('ZSCORE', KEYS[1], ARGV[1]) then return redis.call('ZADD', KEYS[1], ARGV[2], ARGV[1]) else return 0 end;" 1 s1 m1 3
+(integer) 0
+127.0.0.1:6379&gt; ZSCORE s1 m1
+"2"
+127.0.0.1:6379&gt; EVAL "if not redis.call('ZSCORE', KEYS[1], ARGV[1]) then return redis.call('ZADD', KEYS[1], ARGV[2], ARGV[1]) else return 0 end;" 1 s1 m2 3
+(integer) 1
+127.0.0.1:6379&gt; ZSCORE s1 m2
+"3"
+</code></p>
+
+<p>Here we add a member <code>m1</code> to set <code>s1</code> with score <code>1</code>, then we add it again with score <code>2</code>. ZSCORE reveals that the score has been changed.
+Then with Lua script we add <code>m1</code> with score <code>3</code>, but only if ZSCORE returns <code>nil</code>, which is not true an as such doesn't change the score of <code>m1</code>.
+But for new member <code>m2</code> with score <code>3</code> it works.</p>
+
+<p>These are only 3 simple use cases, but you can find it useful for many other things.</p>
+]]></content>
+  </entry>
+  
+</feed>

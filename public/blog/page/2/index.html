@@ -9,8 +9,15 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="So Play 2.1 is officialy out and one of the new features it brings is the ability
-to configure root application context. It have been in 2.1 branch &hellip;">
+  <meta name="description" content="In Racket you can define streams which are kind of lazy lists. So here are a couple of helper functions for easier stream creation: 1
+2
+3
+4
+5
+6
+7
+8
+9 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +90,75 @@ to configure root application context. It have been in 2.1 branch &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/02/25/helper-functions-for-building-streams-in-racket/">Helper Functions for Building Streams in Racket</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-25T00:05:00-05:00" pubdate data-updated="true">Feb 25<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In <a href="http://racket-lang.org">Racket</a> you can define <a href="http://docs.racket-lang.org/reference/streams.html">streams</a> which are kind of lazy lists.
+ So here are a couple of helper functions for easier stream creation:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="c1">; returns stream</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="nv">next-element</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">letrec </span><span class="p">([</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span>
+</span><span class='line'>                       <span class="p">(</span><span class="nb">cons </span><span class="p">(</span><span class="nf">current-element</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nf">next-element</span> <span class="nv">x</span><span class="p">)))))])</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">lambda </span><span class="p">()</span> <span class="p">(</span><span class="nf">lazy-seq</span> <span class="nv">seed</span><span class="p">))))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">; returns stream built sequantialy</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">stream-builder</span> <span class="nv">seed</span> <span class="nv">current-element</span> <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And usage:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='racket'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">nats</span> <span class="p">(</span><span class="nf">seq-stream-builder</span> <span class="mi">1</span> <span class="nv">identity</span><span class="p">))</span> <span class="c1">; define stream of natural numbers</span>
+</span><span class='line'><span class="p">(</span><span class="nf">nats</span><span class="p">)</span> <span class="c1">; returns &#39;(1 . #&lt;procedure&gt;)</span>
+</span><span class='line'><span class="p">((</span><span class="nb">cdr </span><span class="p">(</span><span class="nf">nats</span><span class="p">)))</span> <span class="c1">; returns &#39;(2 . #&lt;procedure&gt;)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/02/23/root-application-context-in-play-2-dot-1/">Root Application Context in Play 2.1</a></h1>
     
     
@@ -140,6 +216,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/06/redis-lua-tips/">Redis Lua Tips</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/29/call-scala-curried-functions-from-java/">Call Scala curried functions from Java</a>
       </li>
     
@@ -155,10 +235,6 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
         <a href="/blog/2013/10/27/reactivemongo-macros-and-nosuchelementexception-none-get/">ReactiveMongo, macros and  NoSuchElementException: None.get</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/07/12/akka-stop-your-router-gracefully/">Akka: Stop Your Router Gracefully</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -168,7 +244,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
 
 <section>
   <h1>Categories</h1>
-    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 106.66666666666667%'>akka</a> <a href='/blog/categories/camel' style='font-size: 106.66666666666667%'>camel</a> <a href='/blog/categories/cas' style='font-size: 106.66666666666667%'>cas</a> <a href='/blog/categories/idea' style='font-size: 106.66666666666667%'>idea</a> <a href='/blog/categories/java' style='font-size: 126.66666666666667%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 106.66666666666667%'>lots of parens</a> <a href='/blog/categories/mongo' style='font-size: 106.66666666666667%'>mongo</a> <a href='/blog/categories/play' style='font-size: 113.33333333333333%'>play</a> <a href='/blog/categories/racket' style='font-size: 106.66666666666667%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 106.66666666666667%'>reactivemongo</a> <a href='/blog/categories/router' style='font-size: 106.66666666666667%'>router</a> <a href='/blog/categories/sbt' style='font-size: 113.33333333333333%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typesafe-config' style='font-size: 106.66666666666667%'>typesafe-config</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 106.66666666666667%'>akka</a> <a href='/blog/categories/camel' style='font-size: 106.66666666666667%'>camel</a> <a href='/blog/categories/cas' style='font-size: 106.66666666666667%'>cas</a> <a href='/blog/categories/idea' style='font-size: 106.66666666666667%'>idea</a> <a href='/blog/categories/java' style='font-size: 126.66666666666667%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 106.66666666666667%'>lots of parens</a> <a href='/blog/categories/lua' style='font-size: 106.66666666666667%'>lua</a> <a href='/blog/categories/mongo' style='font-size: 106.66666666666667%'>mongo</a> <a href='/blog/categories/play' style='font-size: 113.33333333333333%'>play</a> <a href='/blog/categories/racket' style='font-size: 106.66666666666667%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 106.66666666666667%'>reactivemongo</a> <a href='/blog/categories/redis' style='font-size: 106.66666666666667%'>redis</a> <a href='/blog/categories/router' style='font-size: 106.66666666666667%'>router</a> <a href='/blog/categories/sbt' style='font-size: 113.33333333333333%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typesafe-config' style='font-size: 106.66666666666667%'>typesafe-config</a> </span>
 </section>
 
   
@@ -178,7 +254,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   </div>
   <footer role="contentinfo"><p>
   Copyright &copy; 2014 - Eugene Platonov -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> on <a href="http://heroku.com">Heroku</a></span>
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
 </footer>

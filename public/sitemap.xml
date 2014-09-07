@@ -2,66 +2,70 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://daodecode.com/blog/2013/02/23/root-application-context-in-play-2-dot-1/</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://daodecode.com/blog/2013/02/25/helper-functions-for-building-streams-in-racket/
         </loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2013/02/28/camel-and-scala-2-dot-10/</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://daodecode.com/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/
         </loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2013/03/25/castgc-cookie-and-httponly-flag/</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2013/04/19/debug-an-sbt-plugin-in-intellij-idea/</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2013/07/12/akka-stop-your-router-gracefully/</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://daodecode.com/blog/2013/10/27/reactivemongo-macros-and-nosuchelementexception-none-get/
         </loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://daodecode.com/blog/2014/02/04/override-a-list-property-for-typesafe-config/
         </loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2014/02/18/sbt-plugins-no-default-package-please/</loc>
-        <lastmod>2014-04-29T13:43:07-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/2014/04/29/call-scala-curried-functions-from-java/</loc>
-        <lastmod>2014-04-29T13:46:59-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://daodecode.com/blog/2014/09/06/redis-lua-tips/</loc>
+        <lastmod>2014-09-06T20:50:58-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/blog/archives/</loc>
-        <lastmod>2014-04-29T13:46:59-04:00</lastmod>
+        <lastmod>2014-09-06T20:50:58-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/robots.txt</loc>
-        <lastmod>2014-04-28T14:56:27-04:00</lastmod>
+        <lastmod>2014-09-06T18:16:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://daodecode.com/</loc>
-        <lastmod>2014-04-29T13:46:59-04:00</lastmod>
+        <lastmod>2014-09-06T20:50:58-04:00</lastmod>
     </url>
 </urlset>
