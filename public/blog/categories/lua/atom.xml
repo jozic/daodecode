@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lua | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/lua/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-09-06T20:50:59-04:00</updated>
+  <updated>2014-09-06T21:41:59-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -18,10 +18,10 @@
     <link href="http://daodecode.com/blog/2014/09/06/redis-lua-tips/"/>
     <updated>2014-09-06T18:10:00-04:00</updated>
     <id>http://daodecode.com/blog/2014/09/06/redis-lua-tips</id>
-    <content type="html"><![CDATA[<p>As you may know <a href="http://redis.io">redis</a> <a href="http://redis.io/commands/EVAL">allows</a> you to pass a <a href="http://www.lua.org/">Lua</a> script which will be executed on server side.
-What's great about it is that it will be executed atomically, as redis is single-threaded.  <br/>
-Though beware of long-running scripts as they can hug the server.
- So what good can you do with lua? Actually a lot, and here some simple use cases</p>
+    <content type="html"><![CDATA[<p>As you may know <a href="http://redis.io">Redis</a> <a href="http://redis.io/commands/EVAL">allows</a> you to pass a <a href="http://www.lua.org/">Lua</a> script which will be executed on server side.
+What great about it is that it will be executed atomically, as Redis is single-threaded.  <br/>
+Though beware of long-running scripts as they can hog the server.
+ So what good can you do with Lua? Actually a lot, and here some simple use cases</p>
 
 <h2>Count keys by pattern</h2>
 
@@ -59,9 +59,9 @@ EVAL "return #redis.call('KEYS', 'your pattern goes here')" 0
 
 <p>Let's say you get some events from somewhere, extract some info from the events and add it to a redis set.
 And you want your set to expire at some point, so you want to set a <a href="http://redis.io/commands/ttl">ttl</a> for the set, but only once.
- Redis will kindly create a set key if it didn't exist before.
- But if you will send <a href="http://redis.io/commands/expire">EXPIRE</a> command along with every <a href="http://redis.io/commands/sadd">SADD</a> command,
- redis will kindly overwrite existing ttl with the new value. Lua to the rescue:</p>
+ Redis kindly creates a set key if it didn't exist before.
+ But if you send <a href="http://redis.io/commands/expire">EXPIRE</a> command along with every <a href="http://redis.io/commands/sadd">SADD</a> command,
+ redis kindly overwrites existing ttl with the new value. Lua to the rescue:</p>
 
 <p><code>
 EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 &lt;KEY_NAME&gt; &lt;TTL&gt;
@@ -99,10 +99,10 @@ EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], A
 <h2>Add members to a sorted set only once</h2>
 
 <p>Redis gives us <a href="http://redis.io/commands#sorted_set">sorted sets</a> where we can add members along with scores associated with the members.
-If you <a href="http://redis.io/commands/zadd">ZADD</a> a member which already exists in the set its score will be overwritten.
+If you <a href="http://redis.io/commands/zadd">ZADD</a> a member which already exists in the set its score is overwritten.
 It could happen that you may want to add a member only once. The easy way is to check if member doesn't exist with
 <a href="http://redis.io/commands/zscore">ZSCORE</a> command.
-But those two commands are not atomic and <a href="http://en.wikipedia.org/wiki/Race_condition">races</a> are possible. Lua is here again:</p>
+But running those two commands is not an atomic action and <a href="http://en.wikipedia.org/wiki/Race_condition">races</a> are possible. Lua is here again:</p>
 
 <p>``` lua
 if not redis.call('ZSCORE', KEYS[1], ARGV[1])</p>

@@ -6,10 +6,10 @@ comments: true
 categories: [redis, lua] 
 ---
 
-As you may know [redis](http://redis.io) [allows](http://redis.io/commands/EVAL) you to pass a [Lua](http://www.lua.org/) script which will be executed on server side.
-What's great about it is that it will be executed atomically, as redis is single-threaded.    
-Though beware of long-running scripts as they can hug the server.
- So what good can you do with lua? Actually a lot, and here some simple use cases
+As you may know [Redis](http://redis.io) [allows](http://redis.io/commands/EVAL) you to pass a [Lua](http://www.lua.org/) script which will be executed on server side.
+What great about it is that it will be executed atomically, as Redis is single-threaded.    
+Though beware of long-running scripts as they can hog the server.
+ So what good can you do with Lua? Actually a lot, and here some simple use cases
  
 Count keys by pattern
 ---------------------
@@ -49,9 +49,9 @@ Set expiration only if it has not already been set
 
 Let's say you get some events from somewhere, extract some info from the events and add it to a redis set. 
 And you want your set to expire at some point, so you want to set a [ttl](http://redis.io/commands/ttl) for the set, but only once.
- Redis will kindly create a set key if it didn't exist before. 
- But if you will send [EXPIRE](http://redis.io/commands/expire) command along with every [SADD](http://redis.io/commands/sadd) command, 
- redis will kindly overwrite existing ttl with the new value. Lua to the rescue:
+ Redis kindly creates a set key if it didn't exist before. 
+ But if you send [EXPIRE](http://redis.io/commands/expire) command along with every [SADD](http://redis.io/commands/sadd) command, 
+ redis kindly overwrites existing ttl with the new value. Lua to the rescue:
  
 ```
 EVAL "if (redis.call('TTL', KEYS[1]) == -1) then redis.call('EXPIRE', KEYS[1], ARGV[1]) end" 1 <KEY_NAME> <TTL>
@@ -91,10 +91,10 @@ Add members to a sorted set only once
 -------------------------------------
 
 Redis gives us [sorted sets](http://redis.io/commands#sorted_set) where we can add members along with scores associated with the members. 
-If you [ZADD](http://redis.io/commands/zadd) a member which already exists in the set its score will be overwritten. 
+If you [ZADD](http://redis.io/commands/zadd) a member which already exists in the set its score is overwritten. 
 It could happen that you may want to add a member only once. The easy way is to check if member doesn't exist with 
 [ZSCORE](http://redis.io/commands/zscore) command. 
-But those two commands are not atomic and [races](http://en.wikipedia.org/wiki/Race_condition) are possible. Lua is here again:
+But running those two commands is not an atomic action and [races](http://en.wikipedia.org/wiki/Race_condition) are possible. Lua is here again:
 
 ``` lua
 if not redis.call('ZSCORE', KEYS[1], ARGV[1]) 
