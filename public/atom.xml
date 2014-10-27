@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-09-06T21:41:59-04:00</updated>
+  <updated>2014-10-27T17:20:31-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,64 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[scala-maven-plugin and Multiple versions of scala libraries detected]]></title>
+    <link href="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/"/>
+    <updated>2014-10-27T17:15:00-04:00</updated>
+    <id>http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected</id>
+    <content type="html"><![CDATA[<p>Have you ever seen messages like these running <a href="https://github.com/davidB/scala-maven-plugin">scala-maven-plugin</a>?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[WARNING]  Expected all dependencies to require Scala version: 2.10.3
+</span><span class='line'>[WARNING]  mycoolcompany:mycoolproject:1.5.25 requires scala version: 2.10.3
+</span><span class='line'>[WARNING]  me.lessis:odelay-core_2.10:0.1.0 requires scala version: 2.10.4
+</span><span class='line'>[WARNING] Multiple versions of scala libraries detected!</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Starting from scala 2.10 all changes in <a href="http://semver.org/">bugfix/patch</a> version should be backward compatible,
+so these warnings don&#8217;t really have the point in this case.
+But they are still very important in case when, let&#8217;s say, you somehow end up with scala 2.9 and 2.11 libraries.
+It happens that since version 3.1.6 you can fix this using <code>scalaCompatVersion</code> configuration</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>net.alchim31.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>scala-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>3.1.6<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;scalaCompatVersion&gt;</span>${scala.binary.version}<span class="nt">&lt;/scalaCompatVersion&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;scalaVersion&gt;</span>${scala.version}<span class="nt">&lt;/scalaVersion&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="c">&lt;!-- other settings--&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where in my case I have <code>scala.binary.version</code> property defined as</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;scala.binary.version&gt;</span>2.10<span class="nt">&lt;/scala.binary.version&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No more meaningless warnings!</p>
+
+<p><a href="https://groups.google.com/forum/#!topic/maven-and-scala/XSkXrSS8WuU">Related discussions on google groups</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Redis Lua Tips]]></title>

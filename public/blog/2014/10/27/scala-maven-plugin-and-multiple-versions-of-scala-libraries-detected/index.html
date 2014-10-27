@@ -5,11 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: cas - Dao De Code</title>
+  <title>scala-maven-plugin and Multiple versions of scala libraries detected - Dao De Code</title>
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="Category: cas">
+  <meta name="description" content="Have you ever seen messages like these running scala-maven-plugin? 1
+2
+3
+4
+[WARNING] Expected all dependencies to require Scala version: 2.10.3
+[ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://daodecode.com/blog/categories/cas/">
+  <link rel="canonical" href="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,36 +80,142 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Cas</h1>
+    
+      <h1 class="entry-title">Scala-maven-plugin and Multiple Versions of Scala Libraries Detected</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-27T17:15:00-04:00" pubdate data-updated="true">Oct 27<span>th</span>, 2014</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>Have you ever seen messages like these running <a href="https://github.com/davidB/scala-maven-plugin">scala-maven-plugin</a>?</p>
 
-  
-  <h2>2013</h2>
-
-<article>
-  
-<h1><a href="/blog/2013/03/25/castgc-cookie-and-httponly-flag/">CASTGC Cookie and HttpOnly Flag</a></h1>
-<time datetime="2013-03-25T10:56:00-04:00" pubdate><span class='month'>Mar</span> <span class='day'>25</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/cas/'>cas</a>, <a class='category' href='/blog/categories/java/'>java</a></span>
-</footer>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[WARNING]  Expected all dependencies to require Scala version: 2.10.3
+</span><span class='line'>[WARNING]  mycoolcompany:mycoolproject:1.5.25 requires scala version: 2.10.3
+</span><span class='line'>[WARNING]  me.lessis:odelay-core_2.10:0.1.0 requires scala version: 2.10.4
+</span><span class='line'>[WARNING] Multiple versions of scala libraries detected!</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
+<p>Starting from scala 2.10 all changes in <a href="http://semver.org/">bugfix/patch</a> version should be backward compatible,
+so these warnings don&#8217;t really have the point in this case.
+But they are still very important in case when, let&#8217;s say, you somehow end up with scala 2.9 and 2.11 libraries.
+It happens that since version 3.1.6 you can fix this using <code>scalaCompatVersion</code> configuration</p>
 
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>net.alchim31.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>scala-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>3.1.6<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;scalaCompatVersion&gt;</span>${scala.binary.version}<span class="nt">&lt;/scalaCompatVersion&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;scalaVersion&gt;</span>${scala.version}<span class="nt">&lt;/scalaVersion&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="c">&lt;!-- other settings--&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where in my case I have <code>scala.binary.version</code> property defined as</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;scala.binary.version&gt;</span>2.10<span class="nt">&lt;/scala.binary.version&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No more meaningless warnings!</p>
+
+<p><a href="https://groups.google.com/forum/#!topic/maven-and-scala/XSkXrSS8WuU">Related discussions on google groups</a></p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Eugene Platonov</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-27T17:15:00-04:00" pubdate data-updated="true">Oct 27<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/maven/'>maven</a>, <a class='category' href='/blog/categories/scala/'>scala</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/" data-via="" data-counturl="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="small"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/06/redis-lua-tips/" title="Previous Post: Redis Lua Tips">&laquo; Redis Lua Tips</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -164,7 +275,10 @@
       var disqus_shortname = 'daodecode';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/';
+        var disqus_url = 'http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

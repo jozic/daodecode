@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scala | Dao De Code]]></title>
   <link href="http://daodecode.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-09-06T21:41:59-04:00</updated>
+  <updated>2014-10-27T17:20:31-04:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[scala-maven-plugin and Multiple versions of scala libraries detected]]></title>
+    <link href="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/"/>
+    <updated>2014-10-27T17:15:00-04:00</updated>
+    <id>http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected</id>
+    <content type="html"><![CDATA[<p>Have you ever seen messages like these running <a href="https://github.com/davidB/scala-maven-plugin">scala-maven-plugin</a>?
+<code>
+[WARNING]  Expected all dependencies to require Scala version: 2.10.3
+[WARNING]  mycoolcompany:mycoolproject:1.5.25 requires scala version: 2.10.3
+[WARNING]  me.lessis:odelay-core_2.10:0.1.0 requires scala version: 2.10.4
+[WARNING] Multiple versions of scala libraries detected!
+</code></p>
+
+<p>Starting from scala 2.10 all changes in <a href="http://semver.org/">bugfix/patch</a> version should be backward compatible,
+so these warnings don't really have the point in this case.
+But they are still very important in case when, let's say, you somehow end up with scala 2.9 and 2.11 libraries.
+It happens that since version 3.1.6 you can fix this using <code>scalaCompatVersion</code> configuration</p>
+
+<p>``` xml</p>
+
+<pre><code>        &lt;plugin&gt;
+            &lt;groupId&gt;net.alchim31.maven&lt;/groupId&gt;
+            &lt;artifactId&gt;scala-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.1.6&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;scalaCompatVersion&gt;${scala.binary.version}&lt;/scalaCompatVersion&gt;
+                &lt;scalaVersion&gt;${scala.version}&lt;/scalaVersion&gt;
+            &lt;/configuration&gt;
+            &lt;!-- other settings--&gt;
+        &lt;/plugin&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>Where in my case I have <code>scala.binary.version</code> property defined as</p>
+
+<p><code>xml
+&lt;scala.binary.version&gt;2.10&lt;/scala.binary.version&gt;
+</code>
+No more meaningless warnings!</p>
+
+<p><a href="https://groups.google.com/forum/#!topic/maven-and-scala/XSkXrSS8WuU">Related discussions on google groups</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Call Scala curried functions from Java]]></title>
@@ -163,132 +208,6 @@ db.person.insert({firstName: "Eugene", lastName: "Platonov", age: NumberInt(27)}
 
 <p>I think reactive mongo should be more explicit about what went wrong and hopefully
 this will be <a href="https://github.com/ReactiveMongo/ReactiveMongo/pull/131">fixed soon</a>, but if not, you know where the dog lies buried.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Akka: Stop Your Router Gracefully]]></title>
-    <link href="http://daodecode.com/blog/2013/07/12/akka-stop-your-router-gracefully/"/>
-    <updated>2013-07-12T23:34:00-04:00</updated>
-    <id>http://daodecode.com/blog/2013/07/12/akka-stop-your-router-gracefully</id>
-    <content type="html"><![CDATA[<p>Let's say you want to find an answer to <a href="http://en.wikipedia.org/wiki/Answer_to_Life,_the_Universe,_and_Everything">Life, the Universe and Everything</a>
- and you know it will take some time,
- so you want to do it in parralel while doing something else (DSE).<br/>
-You say to yourself "okay, I'll fire an actor and send him a message or bunch of messages, then DSE and collect my results from the actor after i'm done"</p>
-
-<p>So you've got it coded
-``` scala
-  val answerToLifeTheUniverseAndEverything = new AtomicInteger(0)</p>
-
-<p>  val actor = system.actorOf(Props(new Actor {</p>
-
-<pre><code>def receive = {
-  case i: Int =&gt; {
-    answerToLifeTheUniverseAndEverything.getAndIncrement()
-  }
-  case _ =&gt;
-}
-</code></pre>
-
-<p>  }))
-```</p>
-
-<p>Now you want make it work and get results at the end. You need to make sure to access the result after all work is done.
-From <a href="http://akka.io/docs/">akka documentation</a> you found out that <a href="http://doc.akka.io/api/akka/2.2.0/index.html#akka.pattern.GracefulStopSupport"><code>akka.pattern.GracefulStopSupport</code></a>
-seems a good choice to do it.</p>
-
-<p>```
-  for (i &lt;- 1 to 42) actor ! i</p>
-
-<p>  // DO SOMETHING ELSE</p>
-
-<p>  import akka.pattern.gracefulStop</p>
-
-<p>  Await.result(gracefulStop(actor, timeout), timeout)</p>
-
-<p>  println(s"We found the answer, it's ${answerToLifeTheUniverseAndEverything.get}")</p>
-
-<p><code>
-as a result you see
-</code>
-We found the answer, it's 42
-```
-Nice!<br/>
-But then you think "I can do it not only in parallel to my DSE, but compute it in many independent actors, so it will be done even faster".
-Using a router actor seems an easy way to do it.</p>
-
-<p>```
-  val answerToLifeTheUniverseAndEverything = new AtomicInteger(0)</p>
-
-<p>  val router = system.actorOf(Props(new Actor {</p>
-
-<pre><code>def receive = {
-  case i: Int =&gt; {
-    answerToLifeTheUniverseAndEverything.getAndIncrement()
-  }
-  case _ =&gt;
-}
-</code></pre>
-
-<p>  }).withRouter(RoundRobinRouter(nrOfInstances = 10)))</p>
-
-<p>  for (i &lt;- 1 to 42) router ! i</p>
-
-<p>  // DO SOMETHING ELSE</p>
-
-<p>  import akka.pattern.gracefulStop</p>
-
-<p>  Await.result(gracefulStop(router, timeout), timeout)</p>
-
-<p>  println(s"We found the answer, it's ${answerToLifeTheUniverseAndEverything.get}")
-```</p>
-
-<p>Router sends messages to routees in round-robin fashion and routees do the work parallel to each other.
-At the end you again see
-<code>
-We found the answer, it's 42
-</code></p>
-
-<p>Super nice! You're done! You can go and grab a milk shake. Or do you?  <br/>
-Computing answer to Life, the Universe and Everything is a complex task, so it really should take some time and effort to calculate it.<br/>
-Let's add <code>Thread.sleep(1000)</code> pretending that our actor(or rather many actors) do something time consuming.
-```</p>
-
-<pre><code>def receive = {
-  case i: Int =&gt; {
-    Thread.sleep(1000)
-    answerToLifeTheUniverseAndEverything.getAndIncrement()
-  }
-  case _ =&gt;
-}
-</code></pre>
-
-<p><code>
-And then while you enjoing your shake all of a sudden you see
-</code>
-We found the answer, it's 10
-<code>``
-What the hell?  
-The thing is</code>gracefullStop<code>sends a</code>PoisonPill<code>to an actor, which is a router in our case.
-Once an actor gets to a</code>PoisonPill<code>message it decides to die and as a good parent, he can't allow his children stay and suffer in this cruel world, so he kills them too.  
-"But</code>PoisonPill` will be the last message my router gets, right? So it dies after all other messages are processed." you say.<br/>
-Right, but processing a message from a router's point of view is just to send it to one of its routees.<br/>
-But then it dies when they still in progress and because the number of messages (42) is greater than number of routees (10) they all have more than one message to process.
-So they do, until their <em>Daddy</em> comes and gets them to the <em>Land of Peace</em>. Their unprocessed messages are lost.
-Thus the answer to Life, the Universe and Everything you get is 10. It can be different, but it usually will be around a number of routees.</p>
-
-<p>So what is the solution?</p>
-
-<p>The answer before akka 2.2 is don't use <code>gracefulStop</code> with routers! (Of course you can take a look at the source code and make your own version of <code>gracefulStop</code>)
-Since 2.2 you can specify stopMessage which is a <code>PoisonPill</code> by default. So the line will look like</p>
-
-<p><code>
-  Await.result(gracefulStop(router, timeout, Broadcast(PoisonPill)), timeout)
-</code>
-And now the answer is correct again :)
-<code>
-We found the answer, it's 42
-</code></p>
 ]]></content>
   </entry>
   
