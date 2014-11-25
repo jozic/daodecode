@@ -9,9 +9,8 @@
   <meta name="author" content="Eugene Platonov">
 
   
-  <meta name="description" content="Camel and Scala is a good combination,
-but if you like to be on the bleeding edge and almost done converting your scala app to 2.10
-you can find that &hellip;">
+  <meta name="description" content="You have a Play application and let&#8217;s say you want to add some simple authentication logic to restrict access to your actions.
+You want all &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,268 @@ you can find that &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/08/testing-security-dot-authenticated-in-play-2-dot-0-and-2-dot-1/">Testing Security.Authenticated in Play 2.0 and 2.1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-08T21:00:00-05:00" pubdate data-updated="true">Mar 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>You have a <a href="http://www.playframework.com/">Play</a> application and let&#8217;s say you want to add some simple authentication logic to restrict access to your actions.
+You want all your users to provide a ticket (e.g <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">cas proxy ticket</a>)
+in a request header, so you can use the ticket to authenticate them.</p>
+
+<p>Play&#8217;s <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Security$">Security.Authenticated</a>
+to the rescue!</p>
+
+<p>You can come up with something like this in Play 2.1:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Secured</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">logger</span> <span class="k">=</span> <span class="nc">Logger</span><span class="o">(</span><span class="s">&quot;secured&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">final</span> <span class="k">def</span> <span class="n">fail</span><span class="o">(</span><span class="n">reason</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Access attempt failed: $reason&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="nc">Unauthorized</span><span class="o">(</span><span class="s">&quot;must be authenticated&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">final</span> <span class="k">def</span> <span class="n">secured</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">action</span><span class="k">:</span> <span class="kt">Action</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span> <span class="k">=</span>
+</span><span class='line'>    <span class="nc">Security</span><span class="o">.</span><span class="nc">Authenticated</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">req</span> <span class="k">=&gt;</span> <span class="n">req</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;authTicket&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">fail</span><span class="o">(</span><span class="s">&quot;no ticket found&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="k">=&gt;</span> <span class="nc">Action</span><span class="o">(</span><span class="n">action</span><span class="o">.</span><span class="n">parser</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">request</span> <span class="k">=&gt;</span> <span class="n">withTicket</span><span class="o">(</span><span class="n">ticket</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">action</span><span class="o">(</span><span class="n">request</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span> <span class="k">def</span> <span class="n">withTicket</span><span class="o">(</span><span class="n">ticket</span><span class="k">:</span> <span class="kt">String</span><span class="o">)(</span><span class="n">produceResult</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Result</span><span class="o">)</span><span class="k">:</span> <span class="kt">Result</span> <span class="o">=</span>
+</span><span class='line'>    <span class="nc">Async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">isValid</span><span class="o">(</span><span class="n">ticket</span><span class="o">)</span> <span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">valid</span> <span class="k">=&gt;</span> <span class="k">if</span> <span class="o">(</span><span class="n">valid</span><span class="o">)</span> <span class="n">produceResult</span> <span class="k">else</span> <span class="n">fail</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;provided ticket $ticket is invalid&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">isValid</span><span class="o">(</span><span class="n">ticket</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Boolean</span><span class="o">]</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In Play 2.0 it looks almost same except that <code>isValid</code> returns <em>old</em> play&#8217;s <code>Promise</code> instead of scala&#8217;s <code>Future</code>.</p>
+
+<p>And you can use it like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">securedAction</span> <span class="k">=</span> <span class="n">secured</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nc">Action</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">request</span> <span class="k">=&gt;</span> <span class="nc">Ok</span><span class="o">(</span><span class="s">&quot;Am I protected?&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All good, but how do we know it works? Test it!</p>
+
+<p>Let&#8217;s create a fake controller which has both secured and non-secured actions. And we&#8217;ll use it in our tests, or rather <a href="http://etorreborre.github.com/specs2/">specs</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">object</span> <span class="nc">FakeController</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="k">with</span> <span class="nc">Secured</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">securedAction</span> <span class="k">=</span> <span class="n">secured</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">Action</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">request</span> <span class="k">=&gt;</span> <span class="nc">Ok</span><span class="o">(</span><span class="s">&quot;Am I protected?&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="n">nonSecuredAction</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">request</span> <span class="k">=&gt;</span> <span class="nc">Ok</span><span class="o">(</span><span class="s">&quot;I don&#39;t care&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="n">isValid</span><span class="o">(</span><span class="n">ticket</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Promise</span><span class="o">.</span><span class="n">pure</span><span class="o">(</span><span class="n">ticket</span> <span class="o">==</span> <span class="s">&quot;valid&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To test that <code>authTicket</code> param is required we can have something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="s">&quot;return UNAUTHORIZED if `authTicket` param is not provided&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">running</span><span class="o">(</span><span class="n">app</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">FakeController</span><span class="o">.</span><span class="n">securedAction</span> <span class="n">process</span> <span class="nc">FakeRequest</span><span class="o">()</span>
+</span><span class='line'>    <span class="n">status</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="nc">UNAUTHORIZED</span>
+</span><span class='line'>    <span class="n">contentAsString</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="s">&quot;must be authenticated&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here <code>app</code> is a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.test.FakeApplication">FakeApplication</a>
+ and <code>process</code> is our method (added through implicits) which returns a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Result">Result</a>
+  given a <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.Request">Request</a>.</p>
+
+<p>Please note in Play 2.0 <code>status</code> and <code>contentAsString</code> don&#8217;t know how to handle <a href="http://www.playframework.com/documentation/api/2.1.0/scala/index.html#play.api.mvc.AsyncResult">AsyncResults</a>,
+so with this implementation of <code>withTicket</code> you need to do some trible dance to make it work.</p>
+
+<p>In Play 2.0 <code>Authenticated</code> returnes <code>Action[(Action[A], A)]</code> so our <code>process</code> looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">action2actionExecutor</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">wrapped</span><span class="k">:</span> <span class="kt">Action</span><span class="o">[(</span><span class="kt">Action</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>, <span class="kt">A</span><span class="o">)])</span><span class="k">:</span> <span class="kt">ActionExecutor</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">=</span> <span class="k">new</span> <span class="nc">ActionExecutor</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">wrapped</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">ActionExecutor</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">wrapped</span><span class="k">:</span> <span class="kt">Action</span><span class="o">[(</span><span class="kt">Action</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>, <span class="kt">A</span><span class="o">)])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">process</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">Result</span> <span class="o">=</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">parser</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="n">run</span><span class="o">.</span><span class="n">await</span><span class="o">.</span><span class="n">get</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">Left</span><span class="o">(</span><span class="n">errorResult</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">errorResult</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">Right</span><span class="o">((</span><span class="n">innerAction</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="n">innerAction</span><span class="o">(</span><span class="n">request</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>in Play 2.1 we get just <a href="">EssentialAction</a> (and we can use <a href="">implicit class</a>) so it looks much simple:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ActionExecutor</span><span class="o">(</span><span class="n">action</span><span class="k">:</span> <span class="kt">EssentialAction</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">process</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">Result</span> <span class="o">=</span>
+</span><span class='line'>      <span class="n">concurrent</span><span class="o">.</span><span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">action</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="n">run</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">&quot;sec&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To test what happens if <code>authTicket</code> is provided but is not valid we can do the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">requestWithAuthTicket</span><span class="o">(</span><span class="n">ticket</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;invalid&quot;</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>  <span class="nc">FakeRequest</span><span class="o">().</span><span class="n">withHeaders</span><span class="o">(</span><span class="s">&quot;authTicket&quot;</span> <span class="o">-&gt;</span> <span class="n">ticket</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&quot;return UNAUTHORIZED if `authTicket` param is not valid&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">running</span><span class="o">(</span><span class="n">app</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">FakeController</span><span class="o">.</span><span class="n">securedAction</span> <span class="n">process</span> <span class="n">requestWithAuthTicket</span><span class="o">()</span>
+</span><span class='line'>    <span class="n">status</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="nc">UNAUTHORIZED</span>
+</span><span class='line'>    <span class="n">contentAsString</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="s">&quot;must be authenticated&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To make sure that it allows access when ticket is valid let&#8217;s add this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="s">&quot;return whatever it returns if `authTicket` param is valid&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">running</span><span class="o">(</span><span class="n">app</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">FakeController</span><span class="o">.</span><span class="n">securedAction</span> <span class="n">process</span> <span class="n">requestWithAuthTicket</span><span class="o">(</span><span class="n">ticket</span> <span class="k">=</span> <span class="s">&quot;valid&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">status</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="nc">OK</span>
+</span><span class='line'>    <span class="n">contentAsString</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="n">must_==</span> <span class="s">&quot;Am I protected?&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Full source code can be found on <a href="https://github.com/jozic/play-security-authenticated-tests">github</a> in branches play20 and play20 correspondently.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -261,6 +522,10 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/25/scalatest-maven-and-missing-tests/">Scalatest, Maven and Missing Tests</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/">scala-maven-plugin and Multiple versions of scala libraries detected</a>
       </li>
     
@@ -276,10 +541,6 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
         <a href="/blog/2014/02/18/sbt-plugins-no-default-package-please/">Sbt Plugins: No Default Package Please</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/02/04/override-a-list-property-for-typesafe-config/">Override a list property for Typesafe Config</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -289,7 +550,7 @@ otherwise play will throw a configuration error at you saying &#8220;Invalid app
 
 <section>
   <h1>Categories</h1>
-    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 106.0%'>akka</a> <a href='/blog/categories/camel' style='font-size: 106.0%'>camel</a> <a href='/blog/categories/cas' style='font-size: 106.0%'>cas</a> <a href='/blog/categories/idea' style='font-size: 106.0%'>idea</a> <a href='/blog/categories/java' style='font-size: 124.0%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 106.0%'>lots of parens</a> <a href='/blog/categories/lua' style='font-size: 106.0%'>lua</a> <a href='/blog/categories/maven' style='font-size: 106.0%'>maven</a> <a href='/blog/categories/mongo' style='font-size: 106.0%'>mongo</a> <a href='/blog/categories/play' style='font-size: 112.0%'>play</a> <a href='/blog/categories/racket' style='font-size: 106.0%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 106.0%'>reactivemongo</a> <a href='/blog/categories/redis' style='font-size: 106.0%'>redis</a> <a href='/blog/categories/router' style='font-size: 106.0%'>router</a> <a href='/blog/categories/sbt' style='font-size: 112.0%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/typesafe-config' style='font-size: 106.0%'>typesafe-config</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/akka' style='font-size: 105.45454545454545%'>akka</a> <a href='/blog/categories/camel' style='font-size: 105.45454545454545%'>camel</a> <a href='/blog/categories/cas' style='font-size: 105.45454545454545%'>cas</a> <a href='/blog/categories/idea' style='font-size: 105.45454545454545%'>idea</a> <a href='/blog/categories/java' style='font-size: 121.81818181818181%'>java</a> <a href='/blog/categories/lots-of-parens' style='font-size: 105.45454545454545%'>lots of parens</a> <a href='/blog/categories/lua' style='font-size: 105.45454545454545%'>lua</a> <a href='/blog/categories/maven' style='font-size: 110.9090909090909%'>maven</a> <a href='/blog/categories/mongo' style='font-size: 105.45454545454545%'>mongo</a> <a href='/blog/categories/play' style='font-size: 110.9090909090909%'>play</a> <a href='/blog/categories/racket' style='font-size: 105.45454545454545%'>racket</a> <a href='/blog/categories/reactivemongo' style='font-size: 105.45454545454545%'>reactivemongo</a> <a href='/blog/categories/redis' style='font-size: 105.45454545454545%'>redis</a> <a href='/blog/categories/router' style='font-size: 105.45454545454545%'>router</a> <a href='/blog/categories/sbt' style='font-size: 110.9090909090909%'>sbt</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala</a> <a href='/blog/categories/scalatest' style='font-size: 105.45454545454545%'>scalatest</a> <a href='/blog/categories/typesafe-config' style='font-size: 105.45454545454545%'>typesafe-config</a> </span>
 </section>
 
   

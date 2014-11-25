@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: maven | Dao De Code]]></title>
-  <link href="http://daodecode.com/blog/categories/maven/atom.xml" rel="self"/>
+  <title><![CDATA[Category: scalatest | Dao De Code]]></title>
+  <link href="http://daodecode.com/blog/categories/scalatest/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
   <updated>2014-11-25T15:17:23-05:00</updated>
   <id>http://daodecode.com/</id>
@@ -54,51 +54,6 @@ But if at least one of the tests has parenthesis in test name, then something go
 
 <p>  }
 ```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[scala-maven-plugin and Multiple versions of scala libraries detected]]></title>
-    <link href="http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected/"/>
-    <updated>2014-10-27T17:15:00-04:00</updated>
-    <id>http://daodecode.com/blog/2014/10/27/scala-maven-plugin-and-multiple-versions-of-scala-libraries-detected</id>
-    <content type="html"><![CDATA[<p>Have you ever seen messages like these running <a href="https://github.com/davidB/scala-maven-plugin">scala-maven-plugin</a>?
-<code>
-[WARNING]  Expected all dependencies to require Scala version: 2.10.3
-[WARNING]  mycoolcompany:mycoolproject:1.5.25 requires scala version: 2.10.3
-[WARNING]  me.lessis:odelay-core_2.10:0.1.0 requires scala version: 2.10.4
-[WARNING] Multiple versions of scala libraries detected!
-</code></p>
-
-<p>Starting from scala 2.10 all changes in <a href="http://semver.org/">bugfix/patch</a> version should be backward compatible,
-so these warnings don't really have the point in this case.
-But they are still very important in case when, let's say, you somehow end up with scala 2.9 and 2.11 libraries.
-It happens that since version 3.1.6 you can fix this using <code>scalaCompatVersion</code> configuration</p>
-
-<p>``` xml</p>
-
-<pre><code>        &lt;plugin&gt;
-            &lt;groupId&gt;net.alchim31.maven&lt;/groupId&gt;
-            &lt;artifactId&gt;scala-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;3.1.6&lt;/version&gt;
-            &lt;configuration&gt;
-                &lt;scalaCompatVersion&gt;${scala.binary.version}&lt;/scalaCompatVersion&gt;
-                &lt;scalaVersion&gt;${scala.version}&lt;/scalaVersion&gt;
-            &lt;/configuration&gt;
-            &lt;!-- other settings--&gt;
-        &lt;/plugin&gt;
-</code></pre>
-
-<p>```</p>
-
-<p>Where in my case I have <code>scala.binary.version</code> property defined as</p>
-
-<p><code>xml
-&lt;scala.binary.version&gt;2.10&lt;/scala.binary.version&gt;
-</code>
-No more meaningless warnings!</p>
-
-<p><a href="https://groups.google.com/forum/#!topic/maven-and-scala/XSkXrSS8WuU">Related discussions on google groups</a></p>
 ]]></content>
   </entry>
   

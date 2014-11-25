@@ -4,7 +4,7 @@
   <title><![CDATA[Dao De Code]]></title>
   <link href="http://daodecode.com/atom.xml" rel="self"/>
   <link href="http://daodecode.com/"/>
-  <updated>2014-10-27T17:20:31-04:00</updated>
+  <updated>2014-11-25T15:17:23-05:00</updated>
   <id>http://daodecode.com/</id>
   <author>
     <name><![CDATA[Eugene Platonov]]></name>
@@ -12,6 +12,53 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scalatest, Maven and Missing Tests]]></title>
+    <link href="http://daodecode.com/blog/2014/11/25/scalatest-maven-and-missing-tests/"/>
+    <updated>2014-11-25T14:49:00-05:00</updated>
+    <id>http://daodecode.com/blog/2014/11/25/scalatest-maven-and-missing-tests</id>
+    <content type="html"><![CDATA[<p>As you may know <a href="http://www.scalatest.org">ScalaTest</a> provides a <a href="http://www.scalatest.org/user_guide/using_junit_runner">JUnitRunner</a> and you can perfectly run your scala tests as if they are regular junit tests. In particular, you can run them from maven, using surefire plugin. Why would you do this? In case you have a mixed Java/Scala project with tests written using junit as well as scalatest.
+There is a small issue though, which can make you think you are going crazy! Maven may ignore some tests and skip them. How come?</p>
+
+<p>With scalatest you can write much more descriptive and readable tests like</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="s">&quot;withFrequency&quot;</span> <span class="n">should</span> <span class="s">&quot;calculate frequency of each element in the source&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Iterable</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;c&quot;</span><span class="o">,</span> <span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;d&quot;</span><span class="o">).</span><span class="n">withFrequency</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span><span class="s">&quot;a&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;b&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;c&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&quot;d&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But if at least one of the tests has parenthesis in test name, then something goes wrong and surefire (scalatest junitrunner???) just pretends the whole test class doesn&#8217;t exist.</p>
+
+<p><code>Causes maven to ignore whole test class</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="s">&quot;withFrequency&quot;</span> <span class="n">should</span> <span class="s">&quot;calculate frequency (of each element in the source)&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Iterable</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;c&quot;</span><span class="o">,</span> <span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;d&quot;</span><span class="o">).</span><span class="n">withFrequency</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span><span class="s">&quot;a&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;b&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;c&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&quot;d&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The solution is obvious - avoid parenthesis. If you really want them, you can easily use square brackets instead.</p>
+
+<p><code>Workaround</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="s">&quot;withFrequency&quot;</span> <span class="n">should</span> <span class="s">&quot;calculate frequency [of each element in the source]&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Iterable</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;c&quot;</span><span class="o">,</span> <span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;d&quot;</span><span class="o">).</span><span class="n">withFrequency</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span><span class="s">&quot;a&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;b&quot;</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">,</span> <span class="s">&quot;c&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&quot;d&quot;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[scala-maven-plugin and Multiple versions of scala libraries detected]]></title>
